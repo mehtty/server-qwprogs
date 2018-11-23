@@ -307,7 +307,7 @@
 #define PC_DEMOMAN		4
 #define PC_MEDIC		5
 #define PC_HVYWEAP		6
-#define PC_PYRO			7
+#define PC_PLASMA		7
 #define PC_SPY			8
 #define PC_ENGINEER		9
 
@@ -393,7 +393,7 @@
 #define TF_DISGUISE_DEMOMAN     68  // Spy: Disguise as Demoman
 #define TF_DISGUISE_MEDIC       69  // Spy: Disguise as Medic
 #define TF_DISGUISE_HWGUY       70  // Spy: Disguise as HWGuy
-#define TF_DISGUISE_PYRO        71  // Spy: Disguise as Pyro
+#define TF_DISGUISE_PLASMA      71  // Spy: Disguise as Plasma
 #define TF_DISGUISE_ENGINEER    72  // Spy: Disguise as Engineer
 #define TF_DISGUISE_BLUE        73  // Spy: Disguise as blue team
 #define TF_DISGUISE_RED         74  // Spy: Disguise as red team
