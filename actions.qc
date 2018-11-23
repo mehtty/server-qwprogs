@@ -6,23 +6,29 @@ void () TeamFortress_ClipTick;
 
 void () TeamFortress_Discard = {
     newmis = spawn();
-    if ((self.playerclass == PC_SCOUT)
-                || (self.playerclass == PC_ENGINEER)
-                || (self.playerclass == PC_MEDIC)) {
-        newmis.ammo_rockets = self.ammo_rockets;
-    } else if ((self.playerclass == PC_SNIPER)
-                || (self.playerclass == PC_SPY)) {
-        newmis.ammo_rockets = self.ammo_rockets;
-        newmis.ammo_cells = self.ammo_cells;
-    } else if ((self.playerclass == PC_SOLDIER)
-                || (self.playerclass == PC_DEMOMAN)) {
-        newmis.ammo_cells = self.ammo_cells;
-        newmis.ammo_nails = self.ammo_nails;
-    } else if (self.playerclass == PC_HVYWEAP) {
-        newmis.ammo_rockets = self.ammo_rockets;
-        newmis.ammo_nails = self.ammo_nails;
-    } else if (self.playerclass == PC_PYRO) {
-        newmis.ammo_nails = self.ammo_nails;
+    switch (self.playerclass)
+    {
+        case PC_SCOUT:
+        case PC_ENGINEER:
+        case PC_MEDIC:
+            newmis.ammo_rockets = self.ammo_rockets;
+        break;
+        case PC_SNIPER:
+        case PC_SPY:
+            newmis.ammo_rockets = self.ammo_rockets;
+            newmis.ammo_cells = self.ammo_cells;
+        break;
+        case PC_SOLDIER:
+        case PC_DEMOMAN:
+            newmis.ammo_cells = self.ammo_cells;
+            newmis.ammo_nails = self.ammo_nails;
+        break;
+        case PC_HVYWEAP:
+            newmis.ammo_rockets = self.ammo_rockets;
+            newmis.ammo_nails = self.ammo_nails;
+        break;
+        case PC_PLASMA:
+            newmis.ammo_nails = self.ammo_nails;
     }
 
     if (self.playerclass == PC_MEDIC && !medicaura && old_medikit)

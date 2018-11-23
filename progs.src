@@ -34,6 +34,7 @@ medic.qc
 pyro.qc
 spy.qc
 engineer.qc
+plasma.qc
 camera.qc
 clan.qc
 tfort.qc
