@@ -27,7 +27,6 @@ void () TeamFortress_Discard = {
             newmis.ammo_rockets = self.ammo_rockets;
             newmis.ammo_nails = self.ammo_nails;
         break;
-        case PC_PYRO:
         case PC_PLASMA:
             newmis.ammo_nails = self.ammo_nails;
     }
