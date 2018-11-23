@@ -439,7 +439,7 @@
 #define TF_CHANGEPC_DEMOMAN     114 // Change class to Demoman
 #define TF_CHANGEPC_MEDIC       115 // Change class to Medic
 #define TF_CHANGEPC_HVYWEAP     116 // Change class to HWGuy
-#define TF_CHANGEPC_PYRO        117 // Change class to Pyro
+#define TF_CHANGEPC_PLASMA      117 // Change class to Plasma
 #define TF_CHANGEPC_SPY         118 // Change class to Spy
 #define TF_CHANGEPC_ENGINEER    119 // Change class to Engineer
 #define TF_CHANGEPC_RANDOM      120 // Change class to RandomPC
@@ -970,6 +970,32 @@
 #define PC_PYRO_GRENADE_INIT_1		1
 #define PC_PYRO_GRENADE_INIT_2		4
 #define PC_PYRO_TF_ITEMS		0
+
+// Class Details for PLASMA
+#define PC_PLASMA_SKIN			21
+#define PC_PLASMA_MAXHEALTH		100
+#define PC_PLASMA_MAXSPEED		300
+#define PC_PLASMA_MAXSTRAFESPEED		300
+#define PC_PLASMA_MAXARMOR		150
+#define PC_PLASMA_INITARMOR		75
+#define PC_PLASMA_MAXARMORTYPE		0.6
+#define PC_PLASMA_INITARMORTYPE		0.6
+#define PC_PLASMA_ARMORCLASSES		27	// ALL except EXPLOSION
+#define PC_PLASMA_INITARMORCLASS		16	// AT_SAVEFIRE
+#define PC_PLASMA_WEAPONS			WEAP_PLASMA | WEAP_AIRGUN | WEAP_AXE | WEAP_SHOTGUN
+#define PC_PLASMA_MAXAMMO_SHOT		40
+#define PC_PLASMA_MAXAMMO_NAIL		50
+#define PC_PLASMA_MAXAMMO_CELL		200
+#define PC_PLASMA_MAXAMMO_ROCKET		60
+#define PC_PLASMA_INITAMMO_SHOT		20
+#define PC_PLASMA_INITAMMO_NAIL		0
+#define PC_PLASMA_INITAMMO_CELL		120
+#define PC_PLASMA_INITAMMO_ROCKET		15
+#define PC_PLASMA_GRENADE_TYPE_1		GR_TYPE_NORMAL
+#define PC_PLASMA_GRENADE_TYPE_2		GR_TYPE_NAPALM
+#define PC_PLASMA_GRENADE_INIT_1		4
+#define PC_PLASMA_GRENADE_INIT_2		2
+#define PC_PLASMA_TF_ITEMS		0
 
 // Class Details for SPY
 #define PC_SPY_SKIN			22
