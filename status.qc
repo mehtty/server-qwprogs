@@ -348,7 +348,7 @@ string (float class) CF_GetRandomClassTip {
                     line2 = "clear a room or block a bottleneck.";
                 }
             }
-        } else if (class == PC_PYRO) {
+        } else if (class == PC_PYRO && !plasmaclass) {
             while (strlen(line1) == 0) {
                 if (!self.display_tip)
                     self.display_tip = ceil(random() * 6);

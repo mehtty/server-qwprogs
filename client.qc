@@ -512,6 +512,9 @@ void () DecodeLevelParms = {
         // use old ROF for nailguns
         old_ng_rof = CF_GetSetting("ongrof", "old_ng_rof", "off");
 
+        // use plasma class
+        plasmaclass = CF_GetSetting("plasma", "plasmaclass", "on");
+
         st = infokey(world, "default");
         if (st == "on") {
             server_default = TRUE;
@@ -560,6 +563,7 @@ void () DecodeLevelParms = {
             old_hp_armor = FALSE;
             ng_velocity = 1500;
             old_ng_rof = FALSE;
+            plasmaclass = TRUE;
         }
 
         st = infokey(world, "faithful");
@@ -609,8 +613,8 @@ void () DecodeLevelParms = {
             old_hp_armor = TRUE;
             ng_velocity = 1000;
             old_ng_rof = TRUE;
+            plasmaclass = FALSE;
         }
-
     }
 
     if (parm11)
@@ -2514,6 +2518,9 @@ string (entity pe_target, entity pe_attacker, float pf_deathmsg) GetDeathMessage
                 } else if (pf_deathmsg == 39) {
                     s_deathstring = " didn't insert the correct change into ";
                     s_deathstring2 = "'s dispenser.\n";
+                } else if (pf_deathmsg == 37) {
+                    s_deathstring = " gets melted by ";
+                    s_deathstring2 = "'s plasma gun.\n";
                 }
 
                 if (pe_attacker.has_disconnected == 1 || pe_attacker.netname == string_null) {

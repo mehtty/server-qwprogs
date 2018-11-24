@@ -307,9 +307,10 @@
 #define PC_DEMOMAN		4
 #define PC_MEDIC		5
 #define PC_HVYWEAP		6
-#define PC_PLASMA		7
+#define PC_PYRO			7
 #define PC_SPY			8
 #define PC_ENGINEER		9
+#define PC_PLASMA		7
 
 // Insert new class definitions here
 
@@ -393,7 +394,7 @@
 #define TF_DISGUISE_DEMOMAN     68  // Spy: Disguise as Demoman
 #define TF_DISGUISE_MEDIC       69  // Spy: Disguise as Medic
 #define TF_DISGUISE_HWGUY       70  // Spy: Disguise as HWGuy
-#define TF_DISGUISE_PLASMA      71  // Spy: Disguise as Plasma
+#define TF_DISGUISE_PYRO	    71  // Spy: Disguise as Pyro
 #define TF_DISGUISE_ENGINEER    72  // Spy: Disguise as Engineer
 #define TF_DISGUISE_BLUE        73  // Spy: Disguise as blue team
 #define TF_DISGUISE_RED         74  // Spy: Disguise as red team
@@ -402,7 +403,7 @@
 #define TF_ENGINEER_BUILD       77  // Engineer: Bring up build menu for Engineer
 #define TF_ENGINEER_DETDISP     78  // Engineer: Detonate dispenser for Engineer
 #define TF_ENGINEER_DETSENTRY   79  // Engineer: Detonate sentry gun for Engineer
-// unused                       80
+#define TF_DISGUISE_PLASMA      80  // Spy: Disguise as Plasma
 // unused                       81
 // unused                       82
 // unused                       83
@@ -439,7 +440,7 @@
 #define TF_CHANGEPC_DEMOMAN     114 // Change class to Demoman
 #define TF_CHANGEPC_MEDIC       115 // Change class to Medic
 #define TF_CHANGEPC_HVYWEAP     116 // Change class to HWGuy
-#define TF_CHANGEPC_PLASMA      117 // Change class to Plasma
+#define TF_CHANGEPC_PYRO        117 // Change class to Pyro
 #define TF_CHANGEPC_SPY         118 // Change class to Spy
 #define TF_CHANGEPC_ENGINEER    119 // Change class to Engineer
 #define TF_CHANGEPC_RANDOM      120 // Change class to RandomPC
@@ -450,7 +451,7 @@
 #define TF_TEAM_SCORES          125 // Display team scores
 #define TF_STATUS_QUERY         126 // Displays current team balance and equilization ratios
 #define TF_NEXTTIP              127 // Shows the next general/class tip
-// unused                       128
+#define TF_CHANGEPC_PLASMA      128 // Change class to Plasma
 // unused                       129
 #define TF_TOGGLEVOTE           130 // Toggle vote menu on/off
 #define TF_VOTENEXT             131 // Vote to start voting for next map
@@ -670,7 +671,9 @@
 #define WEAP_DETPACK			131072
 #define WEAP_TRANQ			262144
 #define WEAP_LASER			524288
-// still room for 12 more weapons
+#define WEAP_PLASMA			1048576
+#define WEAP_AIRGUN			2097152
+// still room for 10 more weapons
 // but we can remove some by giving the weapons
 // a weapon mode (like the rifle)
 
@@ -944,7 +947,6 @@
 #define PC_HVYWEAP_GRENADE_INIT_2	1
 #define PC_HVYWEAP_TF_ITEMS		0
 
-
 // Class Details for PYRO
 #define PC_PYRO_SKIN			21
 #define PC_PYRO_MAXHEALTH		100
@@ -980,8 +982,8 @@
 #define PC_PLASMA_INITARMOR		75
 #define PC_PLASMA_MAXARMORTYPE		0.6
 #define PC_PLASMA_INITARMORTYPE		0.6
-#define PC_PLASMA_ARMORCLASSES		27	// ALL except EXPLOSION
-#define PC_PLASMA_INITARMORCLASS		16	// AT_SAVEFIRE
+#define PC_PLASMA_ARMORCLASSES		31	// ALL
+#define PC_PLASMA_INITARMORCLASS		0	
 #define PC_PLASMA_WEAPONS			WEAP_PLASMA | WEAP_AIRGUN | WEAP_AXE | WEAP_SHOTGUN
 #define PC_PLASMA_MAXAMMO_SHOT		40
 #define PC_PLASMA_MAXAMMO_NAIL		50
@@ -1150,6 +1152,7 @@
 #define TF_ILL_RANDOMPC		128
 #define TF_ILL_SPY		256
 #define TF_ILL_ENGINEER		512
+#define TF_ILL_PLASMA		1024
 
 /*======================================================================*/
 /* Flamethrower								*/
@@ -1213,6 +1216,7 @@
 #define DMSG_SENTRYGUN_ROCKET		34
 #define DMSG_GREN_FLASH			35
 #define DMSG_TRIGGER			36
+#define DMSG_PLASMA				37
 
 /*======================================================*/
 /* Menus						*/

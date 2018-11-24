@@ -373,6 +373,13 @@ void () TeamFortress_DisplayLegalClasses = {
         gotone = 1;
         sprint(self, PRINT_HIGH, "Engineer");
     }
+    if (!(illegalclasses & 1024) && !(ill & 1024)) {
+        if (gotone) {
+            sprint(self, PRINT_HIGH, ", ");
+        }
+        gotone = 1;
+        sprint(self, PRINT_HIGH, "Plasma");
+    }
     if (!(illegalclasses & 128) && !(ill & 128)) {
         if (gotone) {
             sprint(self, PRINT_HIGH, ", ");
@@ -1051,14 +1058,17 @@ float (float pc) IsLegalClass = {
         bit = TF_ILL_MEDIC;
     else if (pc == PC_HVYWEAP)
         bit = TF_ILL_HVYWEP;
-    else if (pc == PC_PYRO)
+    else if (pc == PC_PYRO && !plasmaclass)
         bit = TF_ILL_PYRO;
+    else if (pc == PC_PLASMA)
+        bit = TF_ILL_PLASMA;
     else if (pc == PC_SPY)
         bit = TF_ILL_SPY;
     else if (pc == PC_ENGINEER)
         bit = TF_ILL_ENGINEER;
     else if (pc == PC_RANDOM)
         bit = TF_ILL_RANDOMPC;
+
 
     if ((illegalclasses & bit) ||
         (TeamFortress_TeamGetIllegalClasses(self.team_no) & bit))
@@ -1109,9 +1119,12 @@ void (entity p) TeamFortress_SetSpeed = {
     } else if (p.playerclass == PC_HVYWEAP) {
         p.maxfbspeed = PC_HVYWEAP_MAXSPEED;
         p.maxstrafespeed = PC_HVYWEAP_MAXSTRAFESPEED;
-    } else if (p.playerclass == PC_PYRO) {
+    } else if (p.playerclass == PC_PYRO && !plasmaclass) {
         p.maxfbspeed = PC_PYRO_MAXSPEED;
         p.maxstrafespeed = PC_PYRO_MAXSTRAFESPEED;
+    } else if (p.playerclass == PC_PLASMA) {
+        p.maxfbspeed = PC_PLASMA_MAXSPEED;
+        p.maxstrafespeed = PC_PLASMA_MAXSTRAFESPEED;
     } else if (p.playerclass == PC_CIVILIAN) {
         p.maxfbspeed = PC_CIVILIAN_MAXSPEED;
         p.maxstrafespeed = PC_CIVILIAN_MAXSTRAFESPEED;
@@ -1205,11 +1218,16 @@ void () TeamFortress_SetHealth = {
             self.max_health = 100;
         else
             self.max_health = PC_HVYWEAP_MAXHEALTH;
-    } else if (self.playerclass == PC_PYRO) {
+    } else if (self.playerclass == PC_PYRO && !plasmaclass) {
         if (old_hp_armor)
             self.max_health = 100;
         else
             self.max_health = PC_PYRO_MAXHEALTH;
+    } else if (self.playerclass == PC_PLASMA) {
+        if (old_hp_armor)
+            self.max_health = 100;
+        else
+            self.max_health = PC_PLASMA_MAXHEALTH;
     } else if (self.playerclass == PC_CIVILIAN) {
         if (old_hp_armor)
             self.max_health = 50;
@@ -1939,7 +1957,7 @@ void () TeamFortress_SetEquipment = {
         self.items =
             self.
             items | IT_SHOTGUN | IT_SUPER_SHOTGUN | IT_ROCKET_LAUNCHER;
-    } else if (self.playerclass == PC_PYRO) {
+    } else if (self.playerclass == PC_PYRO && !plasmaclass) {
         self.weapons_carried = self.weapons_carried | PC_PYRO_WEAPONS;
 
         if (spawnfull) {
@@ -1994,6 +2012,61 @@ void () TeamFortress_SetEquipment = {
         self.items =
             self.
             items | IT_SHOTGUN | IT_GRENADE_LAUNCHER | IT_ROCKET_LAUNCHER;
+    } else if (self.playerclass == PC_PLASMA) {
+        self.weapons_carried = self.weapons_carried | PC_PLASMA_WEAPONS;
+
+        if (spawnfull) {
+            self.ammo_rockets = PC_PLASMA_MAXAMMO_ROCKET;
+            self.ammo_nails = PC_PLASMA_MAXAMMO_NAIL;
+            self.ammo_shells = PC_PLASMA_MAXAMMO_SHOT;
+            self.ammo_cells = PC_PLASMA_MAXAMMO_CELL;
+            self.armortype = PC_PLASMA_MAXARMORTYPE;
+            if (old_hp_armor)
+                self.armorvalue = 150;
+            else
+                self.armorvalue = PC_PLASMA_MAXARMOR;
+        } else {
+            self.ammo_rockets = PC_PLASMA_INITAMMO_ROCKET;
+            self.ammo_nails = PC_PLASMA_INITAMMO_NAIL;
+            self.ammo_shells = PC_PLASMA_INITAMMO_SHOT;
+            self.ammo_cells = PC_PLASMA_INITAMMO_CELL;
+            self.armortype = PC_PLASMA_INITARMORTYPE;
+            if (old_hp_armor)
+                self.armorvalue = 75;
+            else
+                self.armorvalue = PC_PLASMA_INITARMOR;
+        }
+
+        // dispenser needs
+        self.need_shells = 1;
+        self.need_nails = 0;
+        self.need_rockets = 1;
+        self.need_cells = 1;
+
+        self.maxammo_rockets = PC_PLASMA_MAXAMMO_ROCKET;
+        self.maxammo_nails = PC_PLASMA_MAXAMMO_NAIL;
+        self.maxammo_shells = PC_PLASMA_MAXAMMO_SHOT;
+        self.maxammo_cells = PC_PLASMA_MAXAMMO_CELL;
+
+        self.no_grenades_1 = PC_PLASMA_GRENADE_INIT_1;
+        self.no_grenades_2 = PC_PLASMA_GRENADE_INIT_2;
+        self.tp_grenades_1 = PC_PLASMA_GRENADE_TYPE_1;
+        self.tp_grenades_2 = PC_PLASMA_GRENADE_TYPE_2;
+        self.tf_items = PC_PLASMA_TF_ITEMS;
+
+        self.armorclass = self.armorclass | PC_PLASMA_INITARMORCLASS;
+        self.armor_allowed = PC_PLASMA_MAXARMORTYPE;
+        if (old_hp_armor)
+            self.maxarmor = 150;
+        else
+            self.maxarmor = PC_PLASMA_MAXARMOR;
+        if (self.last_playerclass != self.playerclass)
+            self.current_weapon = WEAP_PLASMA;
+
+        self.items_allowed = PC_PLASMA_WEAPONS;
+        self.items =
+            self.
+            items | IT_SHOTGUN | IT_ROCKET_LAUNCHER | IT_GRENADE_LAUNCHER;
     } else if (self.playerclass == PC_CIVILIAN) {
         self.weapons_carried = self.weapons_carried | PC_CIVILIAN_WEAPONS;
 
@@ -2269,8 +2342,10 @@ string(float pc) TeamFortress_GetClassName =
         return "Combat Medic";
     else if (pc == PC_HVYWEAP)
         return "Heavy Weapons Guy";
-    else if (pc == PC_PYRO)
+    else if (pc == PC_PYRO && !plasmaclass)
         return "Pyro";
+    else if (pc == PC_PLASMA)
+        return "Plasma";
     else if (pc == PC_SPY)
         return "Spy";
     else if (pc == PC_ENGINEER)
@@ -2702,7 +2777,7 @@ void () TeamFortress_AmmoboxTouch = {
             self.ammo_shells = 0;
             other.ammo_cells = other.ammo_cells + self.ammo_cells;
             self.ammo_cells = 0;
-        } else if (other.playerclass == PC_PYRO) {
+        } else if (other.playerclass == PC_PYRO || other.playerclass == PC_PLASMA) {
             if (!(self.ammo_shells + self.ammo_rockets + self.ammo_cells)) {
                 other.nopickup = self;
                 return;
@@ -3160,8 +3235,10 @@ void (entity p) TeamFortress_ExecClassScript = {
             stuffcmd(p, "exec medic.cfg\n");
         else if (p.playerclass == PC_HVYWEAP)
             stuffcmd(p, "exec hwguy.cfg\n");
-        else if (p.playerclass == PC_PYRO)
+        else if (p.playerclass == PC_PYRO && !plasmaclass)
             stuffcmd(p, "exec pyro.cfg\n");
+        else if (p.playerclass == PC_PLASMA)
+            stuffcmd(p, "exec plasma.cfg\n");
         else if (p.playerclass == PC_SPY)
             stuffcmd(p, "exec spy.cfg\n");
         else if (p.playerclass == PC_ENGINEER)
