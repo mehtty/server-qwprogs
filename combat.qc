@@ -338,7 +338,7 @@ void (entity targ, entity inflictor, entity attacker, float damage,
                 targ.origin - (inflictor.absmin + inflictor.absmax) * 0.5;
             dir = normalize(dir);
 
-            if (inflictor.classname == "plasma") {
+            if (inflictor.classname == "plasma" && targ.netname == attacker.netname) {
                 moment = damage * 4;
             } else {
                 moment = damage;
