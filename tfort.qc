@@ -433,6 +433,8 @@ void () TeamFortress_Inventory = {
             sprint(self, PRINT_HIGH, " caltrop canister");
         else if (self.tp_grenades_1 == GR_TYPE_FLASH)
             sprint(self, PRINT_HIGH, " flash grenade");
+        else if (self.tp_grenades_2 == GR_TYPE_TELE)
+            sprint(self, PRINT_HIGH, " tele grenade");
 
         if (fl > 1)
             sprint(self, PRINT_HIGH, "s");
@@ -460,6 +462,8 @@ void () TeamFortress_Inventory = {
             sprint(self, PRINT_HIGH, " EMP grenade");
         else if (self.tp_grenades_2 == GR_TYPE_FLASH)
             sprint(self, PRINT_HIGH, " flash grenade");
+        else if (self.tp_grenades_2 == GR_TYPE_TELE)
+            sprint(self, PRINT_HIGH, " tele grenade");
 
         if (fl > 1)
             sprint(self, PRINT_HIGH, "s");
@@ -731,6 +735,8 @@ void (float inp) TeamFortress_PrimeGrenade = {
             gs = "Flash grenade";
         else if (self.tp_grenades_1 == 10)
             gs = "Caltrop canister";
+        else if (self.tp_grenades_1 == 11)
+            gs = "Tele grenade";
         else
             gs = "Grenade";
 
@@ -791,6 +797,8 @@ void (float inp) TeamFortress_PrimeGrenade = {
             gs = "EMP grenade";
         else if (self.tp_grenades_2 == 9)
             gs = "Flash grenade";
+        else if (self.tp_grenades_2 == 11)
+            gs = "Tele grenade";
         else
             gs = "Grenade";
 
@@ -945,6 +953,12 @@ void () TeamFortress_GrenadePrimed = {
         newmis.skin = 2;
         newmis.avelocity = '0 300 0';
         setmodel(newmis, "progs/biggren.mdl");
+    } else if (self.weapon == GR_TYPE_TELE) {
+        newmis.touch = TeleGrenadeTouch;
+        newmis.think = TeleGrenadeExplode;
+        newmis.skin = 2;
+        newmis.avelocity = '0 300 0';
+        setmodel(newmis, "progs/biggren.mdl");
     } else if (self.weapon == GR_TYPE_FLARE) {
         newmis.touch = FlareGrenadeTouch;
         newmis.weapon = self.team_no;
@@ -1008,6 +1022,8 @@ void () TeamFortress_GrenadeSwitch = {
             gs = "Gas grenade";
         else if (self.tp_grenades_1 == 8)
             gs = "EMP grenade";
+        else if (self.tp_grenades_1 == 11)
+            gs = "Tele grenade";
         else
             gs = "Grenade";
     } else {
@@ -1030,6 +1046,8 @@ void () TeamFortress_GrenadeSwitch = {
             gs = "Flash grenade";
         else if (self.tp_grenades_2 == 10)
             gs = "Caltrop canister";
+        else if (self.tp_grenades_2 == 11)
+            gs = "Tele grenade";
         else
             gs = "Grenade";
     }
@@ -2436,10 +2454,10 @@ void () TeamFortress_RemoveTimers = {
             if (CTF_Map == 1) {
                 if (te.goal_no == 1) {
                     bprint(PRINT_HIGH, self.netname,
-                           " ���� the ���� flag!\n");
+                           Q" \stook\s the \sblue\s flag!\n");
                 } else if (te.goal_no == 2) {
                     bprint(PRINT_HIGH, self.netname,
-                           " ���� the ��� flag!\n");
+                           Q" \stook\s the \sred\s flag!\n");
                 }
             }
         }
@@ -2896,6 +2914,12 @@ void () TeamFortress_ExplodePerson = {
     } else if (self.weapon == GR_TYPE_NAPALM) {
         newmis.touch = NapalmGrenadeTouch;
         newmis.think = NapalmGrenadeExplode;
+        newmis.skin = 2;
+        newmis.avelocity = '0 300 0';
+        setmodel(newmis, "progs/biggren.mdl");
+    } else if (self.weapon == GR_TYPE_TELE) {
+        newmis.touch = TeleGrenadeTouch;
+        newmis.think = TeleGrenadeExplode;
         newmis.skin = 2;
         newmis.avelocity = '0 300 0';
         setmodel(newmis, "progs/biggren.mdl");

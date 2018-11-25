@@ -724,6 +724,8 @@
 #define GR_TYPE_EMP		8
 #define GR_TYPE_FLASH		9
 #define GR_TYPE_CALTROP		10
+#define GR_TYPE_TELE		11
+
 
 // Defines for WeaponMode
 #define GL_NORMAL	0
@@ -994,7 +996,7 @@
 #define PC_PLASMA_INITAMMO_CELL		120
 #define PC_PLASMA_INITAMMO_ROCKET		15
 #define PC_PLASMA_GRENADE_TYPE_1		GR_TYPE_NORMAL
-#define PC_PLASMA_GRENADE_TYPE_2		GR_TYPE_NAPALM
+#define PC_PLASMA_GRENADE_TYPE_2		GR_TYPE_TELE
 #define PC_PLASMA_GRENADE_INIT_1		4
 #define PC_PLASMA_GRENADE_INIT_2		2
 #define PC_PLASMA_TF_ITEMS		0
@@ -1217,6 +1219,7 @@
 #define DMSG_GREN_FLASH			35
 #define DMSG_TRIGGER			36
 #define DMSG_PLASMA				37
+#define DMSG_GREN_TELE			38
 
 /*======================================================*/
 /* Menus						*/

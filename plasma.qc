@@ -3,6 +3,7 @@
 // associated weaponry
 //==============================================
 
+void () TeleGrenadeTouch;
 void () plasma_touch;
 
 void (vector org, vector dir) launch_plasma = {
@@ -106,4 +107,33 @@ void () TeamFortress_AirGun = {
     }
     self.current_weapon = WEAP_AIRGUN;
     W_SetCurrentAmmo(self);
+};
+
+void () TeleGrenadeTouch = {
+    sound(self, CHAN_WEAPON, "weapons/bounce.wav", 1, ATTN_NORM);
+    if (self.velocity == '0 0 0')
+        self.avelocity = '0 0 0';
+};
+
+void () TeleGrenadeExplode = {
+    deathmsg = DMSG_GREN_TELE;
+
+    vector org, orgtop;
+    org = self.origin;
+    org = org + '0 0 28';
+    orgtop = org + '0 0 56';
+    tracebox(org, self.owner.mins, self.owner.maxs, orgtop, TRUE, self.owner);
+
+    if (trace_startsolid == 0 && trace_fraction == 1) {
+        setorigin(self.owner, org);
+    }
+
+    WriteByte(MSG_MULTICAST, SVC_TEMPENTITY);
+    WriteByte(MSG_MULTICAST, TE_EXPLOSION);
+    WriteCoord(MSG_MULTICAST, self.origin_x);
+    WriteCoord(MSG_MULTICAST, self.origin_y);
+    WriteCoord(MSG_MULTICAST, self.origin_z);
+
+    multicast(self.origin, MULTICAST_PHS);
+    dremove(self);
 };
