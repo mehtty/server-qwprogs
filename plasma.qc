@@ -63,19 +63,24 @@ void () plasma_touch = {
         dremove(self);
         return;
     }
-    if (other.takedamage) {
-        spawn_touchblood(20);
-        deathmsg = self.weapon;
-        TF_T_Damage(other, self, self.owner.owner, 20, TF_TD_NOTTEAM,
+    float damg;
+    damg = 20;
+    deathmsg = self.weapon;
+
+    if (other.health) {
+        TF_T_Damage(other, self, self.owner, damg, TF_TD_NOTTEAM,
                     TF_TD_ELECTRICITY);
-    } else {
-        WriteByte(MSG_MULTICAST, SVC_TEMPENTITY);
-        WriteByte(MSG_MULTICAST, TE_SPIKE);
-        WriteCoord(MSG_MULTICAST, self.origin_x);
-        WriteCoord(MSG_MULTICAST, self.origin_y);
-        WriteCoord(MSG_MULTICAST, self.origin_z);
-        multicast(self.origin, MULTICAST_PHS);
     }
+
+    T_RadiusDamage(self, self.owner, damg, other);
+
+    WriteByte(MSG_MULTICAST, SVC_TEMPENTITY);
+    WriteByte(MSG_MULTICAST, TE_SPIKE);
+    WriteCoord(MSG_MULTICAST, self.origin_x);
+    WriteCoord(MSG_MULTICAST, self.origin_y);
+    WriteCoord(MSG_MULTICAST, self.origin_z);
+    multicast(self.origin, MULTICAST_PHS);
+
     dremove(self);
 };
 

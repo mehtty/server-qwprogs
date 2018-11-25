@@ -232,7 +232,6 @@ void (entity targ, entity inflictor, entity attacker, float damage,
     no_damage = 0;
 
     if (attacker.classname == "player") {
-
         damage = damage * 0.9;
 
         if (attacker.super_damage_finished > time)
@@ -287,7 +286,6 @@ void (entity targ, entity inflictor, entity attacker, float damage,
         save = 0;
 
     } else {
-
         save = ceil(targ.armortype * damage);
         if ((attacker.classname == "player")
             && (targ.team_no > 0)
@@ -321,8 +319,8 @@ void (entity targ, entity inflictor, entity attacker, float damage,
         }
         targ.armorvalue = targ.armorvalue - save;
         take = ceil(damage - save);
-
     }
+
     if (targ.flags & FL_CLIENT) {
 
         targ.dmg_take = targ.dmg_take + take;
@@ -340,12 +338,17 @@ void (entity targ, entity inflictor, entity attacker, float damage,
                 targ.origin - (inflictor.absmin + inflictor.absmax) * 0.5;
             dir = normalize(dir);
 
+            if (inflictor.classname == "plasma") {
+                moment = damage * 4;
+            } else {
+                moment = damage;
+            }
+
             if (targ.playerclass == PC_HVYWEAP) {
-                moment = damage / 4;
+                moment = moment / 4;
                 if (damage <= 50)
                     moment = 0;
-            } else
-                moment = damage;
+            }
 
             if ((moment < 60)
                 && (attacker.classname == "player")
@@ -400,7 +403,6 @@ void (entity targ, entity inflictor, entity attacker, float damage,
 
     }
 
-
     if (targ.playerclass == PC_SPY) {
         targ.attacked_by = attacker;
         targ.feignmsg = deathmsg;
@@ -409,6 +411,10 @@ void (entity targ, entity inflictor, entity attacker, float damage,
     if (T_flags & TF_TD_NOTSELF)
         if (targ == attacker)
             return;
+
+    if (targ == attacker && inflictor.classname == "plasma") {
+        take = take / 4;
+    }
 
     if (take < 1)
         take = 1;
@@ -482,11 +488,17 @@ void (entity targ, entity inflictor, entity attacker, float damage,
 
 void (entity inflictor, entity attacker, float damage,
       entity ignore) T_RadiusDamage = {
-    local float points;
+    local float points, radius;
     local entity head;
     local vector org;
 
-    head = findradius(inflictor.origin, damage + 40);
+    if (inflictor.classname == "plasma") {
+        radius = damage * 2 + 40;
+    } else {
+        radius = damage + 40;
+    }
+
+    head = findradius(inflictor.origin, radius);
     while (head) {
         if (head != ignore) {
             if (head.takedamage) {
