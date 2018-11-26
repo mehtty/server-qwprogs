@@ -115,16 +115,203 @@ void () TeleGrenadeTouch = {
         self.avelocity = '0 0 0';
 };
 
+float (vector org) TestTeleLoc = {
+    float good;
+    good = 0;
+    tracebox(org, self.owner.mins, self.owner.maxs, org, TRUE, self.owner);
+
+    if (trace_startsolid == 1) {
+        dprint("in solid\n");
+    } else if (trace_startsolid == 0 && trace_fraction == 1) {
+        dprint("teleport is fine");
+        good = 1;
+    } else {
+        dprint(strcat("trace fraction: ", ftos(trace_fraction)));
+        dprint(strcat("\ntrace_startsolid: ", ftos(trace_startsolid)));
+    }
+    return good;
+}
+
 void () TeleGrenadeExplode = {
     deathmsg = DMSG_GREN_TELE;
 
-    vector org, orgtop;
+    vector org, modorg;
+    float i, test, yloop, zloop;
     org = self.origin;
-    org = org + '0 0 28';
-    orgtop = org + '0 0 56';
-    tracebox(org, self.owner.mins, self.owner.maxs, orgtop, TRUE, self.owner);
+    test = 0;
+    
+    if (self.flags && FL_ONGROUND) {
+        dprint("on ground\n");
+        org = org + '0 0 25';
+    }
+      
+    test = TestTeleLoc(org);
 
-    if (trace_startsolid == 0 && trace_fraction == 1) {
+    if (test == 0) {
+        // loop through 30x30x50 unit box to test for tele position
+        for (i = 10; i <= 30; i += 10) {
+            modorg = org;
+            modorg_x += i;
+            test = TestTeleLoc(modorg);
+            if (test == 1) {
+                setorigin(self.owner, modorg);
+                break;
+            }
+
+            modorg_x -= i * 2;
+            test = TestTeleLoc(modorg);
+            if (test == 1) {
+                setorigin(self.owner, modorg);
+                break;
+            }
+
+            modorg = org;
+            for (yloop = 10; yloop <= 30; yloop += 10) {
+                modorg_y += yloop;
+                test = TestTeleLoc(modorg);
+                if (test == 1) {
+                    setorigin(self.owner, modorg);
+                    break;
+                }
+                modorg_x += i;
+                test = TestTeleLoc(modorg);
+                if (test == 1) {
+                    setorigin(self.owner, modorg);
+                    break;
+                }
+
+                modorg_x -= i * 2;
+                test = TestTeleLoc(modorg);
+                if (test == 1) {
+                    setorigin(self.owner, modorg);
+                    break;
+                }
+
+                modorg_x = org_x;
+                modorg_y -= yloop * 2;
+                test = TestTeleLoc(modorg);
+                if (test == 1) {
+                    setorigin(self.owner, modorg);
+                    break;
+                }
+
+                modorg_x += i;
+                test = TestTeleLoc(modorg);
+                if (test == 1) {
+                    setorigin(self.owner, modorg);
+                    break;
+                }
+
+                modorg_x -= i * 2;
+                test = TestTeleLoc(modorg);
+                if (test == 1) {
+                    setorigin(self.owner, modorg);
+                    break;
+                }
+
+                modorg = org;
+                for (zloop = 10; zloop <= 50; zloop += 10) {
+                    modorg_z += zloop;
+                    test = TestTeleLoc(modorg);
+                    if (test == 1) {
+                        setorigin(self.owner, modorg);
+                        break;
+                    }
+
+                    modorg_y += yloop;
+                    test = TestTeleLoc(modorg);
+                    if (test == 1) {
+                        setorigin(self.owner, modorg);
+                        break;
+                    }
+                    modorg_x += i;
+                    test = TestTeleLoc(modorg);
+                    if (test == 1) {
+                        setorigin(self.owner, modorg);
+                        break;
+                    }
+
+                    modorg_x -= i * 2;
+                    test = TestTeleLoc(modorg);
+                    if (test == 1) {
+                        setorigin(self.owner, modorg);
+                        break;
+                    }
+
+                    modorg_x = org_x;
+                    modorg_y -= yloop * 2;
+                    test = TestTeleLoc(modorg);
+                    if (test == 1) {
+                        setorigin(self.owner, modorg);
+                        break;
+                    }
+
+                    modorg_x += i;
+                    test = TestTeleLoc(modorg);
+                    if (test == 1) {
+                        setorigin(self.owner, modorg);
+                        break;
+                    }
+
+                    modorg_x -= i * 2;
+                    test = TestTeleLoc(modorg);
+                    if (test == 1) {
+                        setorigin(self.owner, modorg);
+                        break;
+                    }
+
+                    modorg_z -= zloop * 2;
+                    test = TestTeleLoc(modorg);
+                    if (test == 1) {
+                        setorigin(self.owner, modorg);
+                        break;
+                    }
+
+                    modorg_y += yloop;
+                    test = TestTeleLoc(modorg);
+                    if (test == 1) {
+                        setorigin(self.owner, modorg);
+                        break;
+                    }
+                    modorg_x += i;
+                    test = TestTeleLoc(modorg);
+                    if (test == 1) {
+                        setorigin(self.owner, modorg);
+                        break;
+                    }
+
+                    modorg_x -= i * 2;
+                    test = TestTeleLoc(modorg);
+                    if (test == 1) {
+                        setorigin(self.owner, modorg);
+                        break;
+                    }
+
+                    modorg_x = org_x;
+                    modorg_y -= yloop * 2;
+                    test = TestTeleLoc(modorg);
+                    if (test == 1) {
+                        setorigin(self.owner, modorg);
+                        break;
+                    }
+
+                    modorg_x += i;
+                    test = TestTeleLoc(modorg);
+                    if (test == 1) {
+                        setorigin(self.owner, modorg);
+                        break;
+                    }
+
+                    modorg_x -= i * 2;
+                    test = TestTeleLoc(modorg);
+                    if (test == 1) {
+                        setorigin(self.owner, modorg);
+                        break;
+                    }
+                }
+            }
+        }
+    } else {
         setorigin(self.owner, org);
     }
 
