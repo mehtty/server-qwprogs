@@ -1218,8 +1218,14 @@
 #define DMSG_SENTRYGUN_ROCKET		34
 #define DMSG_GREN_FLASH			35
 #define DMSG_TRIGGER			36
-#define DMSG_PLASMA				37
-#define DMSG_GREN_TELE			38
+                            //  37  "team kill"
+                            //  38  sentry gun
+                            //  39  dispenser
+                            //  40  air pipebombs
+                            //  41  caltrops
+#define DMSG_PLASMA				42
+#define DMSG_GREN_TELE			43 // should never happen...
+
 
 /*======================================================*/
 /* Menus						*/
