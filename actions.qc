@@ -529,7 +529,7 @@ void (float weap) TeamFortress_ReloadWeapon = {
         }
         if ((30 - self.reload_plasma) ==
             self.ammo_cells) {
-            sprint(self, PRINT_HIGH, "All rockets are in the clip\n");
+            sprint(self, PRINT_HIGH, "All cells are in the clip\n");
             return;
         }
         if (self.ammo_cells >= 1) {

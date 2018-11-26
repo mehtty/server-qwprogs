@@ -685,12 +685,15 @@
 #define RE_SUPER_SHOTGUN	16 // 8 shots
 #define RE_GRENADE_LAUNCHER	6
 #define RE_ROCKET_LAUNCHER	4
+#define RE_PLASMA			30
+#define RE_SNIPER_RIFLE		1
 
 // reload times
 #define RE_SHOTGUN_TIME			2
 #define RE_SUPER_SHOTGUN_TIME		3
 #define RE_GRENADE_LAUNCHER_TIME	4
 #define RE_ROCKET_LAUNCHER_TIME		5
+#define RE_PLASMA_TIME				5
 
 // Maximum velocity you can move and fire the Sniper Rifle
 #define WEAP_SNIPER_RIFLE_MAX_MOVE	50

@@ -806,6 +806,10 @@ string(entity pl) ClipSizeToString =
         if ((max - pl.reload_rocket_launcher) > pl.ammo_rockets)
             pl.reload_rocket_launcher = (max - pl.ammo_rockets);
         num = (max - pl.reload_rocket_launcher);
+    } else if (pl.current_weapon == WEAP_PLASMA) {
+        if ((max - pl.reload_plasma) > pl.ammo_cells)
+            pl.reload_plasma = (max - pl.ammo_cells);
+        num = (max - pl.reload_plasma);
     } else
         return "";
 
@@ -822,31 +826,22 @@ string(entity pl) ClipSizeToString =
 
 float(entity pl) GetClipSize =
 {
-    float c;
-    c = 0;
     switch (pl.current_weapon) {
         case WEAP_SHOTGUN:
-            c = 8;
-            break;
+            return RE_SHOTGUN;
         case WEAP_SUPER_SHOTGUN:
-            c = 16;
-            break;
+            return RE_SUPER_SHOTGUN;
         case WEAP_SNIPER_RIFLE:
-            c = 1;
-            break;
+            return RE_SNIPER_RIFLE;
         case WEAP_GRENADE_LAUNCHER:
-            c = 6;
-            break;
+            return RE_GRENADE_LAUNCHER;
         case WEAP_ROCKET_LAUNCHER:
-            c = 4;
-            break;
+            return RE_ROCKET_LAUNCHER;
         case WEAP_PLASMA:
-            c = 30;
-            break;
+            return RE_PLASMA;
         default:
-            c = 0;
+            return 0;
     }
-    return c;
 };
 
 string(float num) TeamToString =

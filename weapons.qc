@@ -1760,32 +1760,32 @@ void () W_Reload_plasma = {
 
 float () CheckForReload = {
     if (self.current_weapon == WEAP_SHOTGUN) {
-        if (self.reload_shotgun >= 8 && self.ammo_shells > 0) {
+        if (self.reload_shotgun >= RE_SHOTGUN && self.ammo_shells > 0) {
             TeamFortress_ReloadCurrentWeapon();
             return 1;
         }
     } else if (self.current_weapon == WEAP_SUPER_SHOTGUN) {
-        if (self.reload_super_shotgun >= 16 && self.ammo_shells > 0) {
+        if (self.reload_super_shotgun >= RE_SUPER_SHOTGUN && self.ammo_shells > 0) {
             TeamFortress_ReloadCurrentWeapon();
             return 1;
         }
     } else if (self.current_weapon == WEAP_SNIPER_RIFLE) {
-        if (self.reload_sniper_rifle >= 1 && self.ammo_shells > 0 && sniperreload) {
+        if (self.reload_sniper_rifle >= RE_SNIPER_RIFLE && self.ammo_shells > 0 && sniperreload) {
             TeamFortress_ReloadCurrentWeapon();
             return 1;
         }
     } else if (self.current_weapon == WEAP_GRENADE_LAUNCHER) {
-        if ((self.reload_grenade_launcher >= 6) && (self.ammo_rockets > 0)) {
+        if ((self.reload_grenade_launcher >= RE_GRENADE_LAUNCHER) && (self.ammo_rockets > 0)) {
             TeamFortress_ReloadCurrentWeapon();
             return 1;
         }
     } else if (self.current_weapon == WEAP_ROCKET_LAUNCHER) {
-        if ((self.reload_rocket_launcher >= 4) && (self.ammo_rockets > 0)) {
+        if ((self.reload_rocket_launcher >= RE_ROCKET_LAUNCHER) && (self.ammo_rockets > 0)) {
             TeamFortress_ReloadCurrentWeapon();
             return 1;
         }
     } else if (self.current_weapon == WEAP_PLASMA) {
-        if ((self.reload_plasma >= 30) && (self.ammo_cells > 0)) {
+        if ((self.reload_plasma >= RE_PLASMA) && (self.ammo_cells > 0)) {
             TeamFortress_ReloadCurrentWeapon();
             return 1;
         }
@@ -1950,9 +1950,14 @@ void () W_Attack = {
             player_assaultcannonup1();
         }
     } else if (self.current_weapon == WEAP_PLASMA) {
+        if (CheckForReload() == TRUE)
+            return;
         player_shot1();
         W_FirePlasma();
-        Attack_Finished(0.1);
+        self.reload_plasma = self.reload_plasma + 1;
+        Status_Refresh(self);
+        CheckForReload();
+        Attack_Finished(0.1);        
     } else if (self.current_weapon == WEAP_AIRGUN) {
         player_rocket1();
         W_FireAirGun();
