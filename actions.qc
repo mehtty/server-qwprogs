@@ -518,6 +518,47 @@ void (float weap) TeamFortress_ReloadWeapon = {
         } else {
             sprint(self, PRINT_HIGH, "Not enough ammo to reload\n");
         }
+    } else if (weap == WEAP_PLASMA) {
+        if (self.ammo_cells == 0) {
+            sprint(self, PRINT_HIGH, "Out of cells\n");
+            return;
+        }
+        if (self.reload_plasma == 0) {
+            sprint(self, PRINT_HIGH, "Clip full\n");
+            return;
+        }
+        if ((30 - self.reload_plasma) ==
+            self.ammo_cells) {
+            sprint(self, PRINT_HIGH, "All rockets are in the clip\n");
+            return;
+        }
+        if (self.ammo_cells >= 1) {
+            self.current_weapon = weap;
+            if (self.reload_plasma >= self.ammo_cells)
+                reloadamount = self.ammo_cells;
+            else
+                reloadamount = self.reload_plasma;
+            Attack_Finished(0.8);
+            self.reload_clipsize = (30 - reloadamount);
+            reloadtime = (30 - reloadamount) / 30;
+            reloadtime = 5 - (5 * reloadtime);
+            self.reload_plasma = 0;
+            if (self.ammo_cells < 30) {
+                self.reload_plasma = 30 - self.ammo_cells;
+            }
+            sprint(self, PRINT_HIGH, "Reloading Plasma gun...\n");
+            self.tfstate = self.tfstate | TFSTATE_RELOADING;
+            Status_Refresh(self);
+            tWeapon = spawn();
+            tWeapon.owner = self;
+            tWeapon.classname = "timer";
+            tWeapon.nextthink = time + reloadtime;
+            tWeapon.think = W_Reload_plasma;
+            self.weaponmodel = "";
+            self.weaponframe = 0;
+        } else {
+            sprint(self, PRINT_HIGH, "Not enough ammo to reload\n");
+        }
     }
     if (reloadamount && reloadtime) {
         self.reload_time = time + reloadtime;

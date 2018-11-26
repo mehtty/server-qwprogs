@@ -822,18 +822,31 @@ string(entity pl) ClipSizeToString =
 
 float(entity pl) GetClipSize =
 {
-    if (pl.current_weapon == WEAP_SHOTGUN)
-        return 8;
-    else if (pl.current_weapon == WEAP_SUPER_SHOTGUN)
-        return 16;
-    else if (pl.current_weapon == WEAP_SNIPER_RIFLE)
-        return 1;
-    else if (pl.current_weapon == WEAP_GRENADE_LAUNCHER)
-        return 6;
-    else if (pl.current_weapon == WEAP_ROCKET_LAUNCHER)
-        return 4;
-    else
-        return 0;
+    float c;
+    c = 0;
+    switch (pl.current_weapon) {
+        case WEAP_SHOTGUN:
+            c = 8;
+            break;
+        case WEAP_SUPER_SHOTGUN:
+            c = 16;
+            break;
+        case WEAP_SNIPER_RIFLE:
+            c = 1;
+            break;
+        case WEAP_GRENADE_LAUNCHER:
+            c = 6;
+            break;
+        case WEAP_ROCKET_LAUNCHER:
+            c = 4;
+            break;
+        case WEAP_PLASMA:
+            c = 30;
+            break;
+        default:
+            c = 0;
+    }
+    return c;
 };
 
 string(float num) TeamToString =

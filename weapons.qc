@@ -1586,6 +1586,14 @@ void (entity pl) W_SetCurrentAmmo = {
         }
         pl.items = pl.items | IT_NAILS;
         pl.weapon = IT_SHOTGUN;
+    } else if (pl.current_weapon == WEAP_PLASMA) {
+        pl.currentammo = pl.ammo_cells;
+        if (!(pl.tfstate & TFSTATE_RELOADING)) {
+            pl.weaponmodel = "progs/v_plasma.mdl";
+            pl.weaponframe = 0;
+        }
+        pl.items = pl.items | IT_CELLS;
+        pl.weapon = IT_EXTRA_WEAPON; //???
     } else {
         pl.currentammo = 0;
         pl.weaponmodel = "";
@@ -1741,6 +1749,15 @@ void () W_Reload_rocket_launcher = {
     Status_Refresh(self.owner);
 };
 
+void () W_Reload_plasma = {
+    self.owner.tfstate = self.owner.tfstate - (self.owner.tfstate & TFSTATE_RELOADING);
+    self.owner.weaponmodel = "progs/v_plasma.mdl";
+    sprint(self.owner, PRINT_LOW, "Finished reloading\n");
+    dremove(self);
+    W_WeaponState_Load(self.owner, 0);
+    Status_Refresh(self.owner);
+};
+
 float () CheckForReload = {
     if (self.current_weapon == WEAP_SHOTGUN) {
         if (self.reload_shotgun >= 8 && self.ammo_shells > 0) {
@@ -1767,6 +1784,11 @@ float () CheckForReload = {
             TeamFortress_ReloadCurrentWeapon();
             return 1;
         }
+    } else if (self.current_weapon == WEAP_PLASMA) {
+        if ((self.reload_plasma >= 30) && (self.ammo_cells > 0)) {
+            TeamFortress_ReloadCurrentWeapon();
+            return 1;
+        }
     }
     return 0;
 };
@@ -1786,6 +1808,9 @@ float (float weap) CheckForAmmo = {
             return 1;
     } else if (weap == WEAP_ROCKET_LAUNCHER) {
         if (self.reload_rocket_launcher >= 1 && self.ammo_rockets > self.reload_rocket_launcher)
+            return 1;
+    } else if (weap == WEAP_PLASMA) {
+        if (self.reload_plasma >= 1 && self.ammo_cells > self.reload_plasma)
             return 1;
     }
     return 0;
