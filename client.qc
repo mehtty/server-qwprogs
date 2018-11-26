@@ -2171,9 +2171,7 @@ string (entity pe_target, entity pe_attacker, float pf_deathmsg) GetDeathMessage
         }
         if (pe_attacker.classname == "player" || pe_attacker.classname == "bot") {
             if (pe_target == pe_attacker) {
-
                 if (pf_deathmsg == DMSG_GREN_HAND) {
-
                     if (pe_target.playerclass == PC_SNIPER)
                         s_deathstring = " got splattered by his own grenade\n";
                     else if (pe_target.playerclass == PC_SOLDIER)
@@ -2192,30 +2190,20 @@ string (entity pe_target, entity pe_attacker, float pf_deathmsg) GetDeathMessage
                         s_deathstring = " stared at his grenade too long\n";
                     else
                         s_deathstring = " grenades himself\n";
-
                     return strcat(pe_target.netname, s_deathstring);
-
                 } else if (pf_deathmsg == DMSG_GREN_NAIL) {
-
                     return strcat(pe_target.netname, " hammers himself\n");
-
                 } else if (pf_deathmsg == DMSG_GREN_MIRV) {
-
                     if (pe_target.playerclass == PC_DEMOMAN)
                         s_deathstring = " practiced his own Mirv dance\n";
                     else if (pe_target.playerclass == PC_HVYWEAP)
                         s_deathstring = " allowed his Mirv to turn against him\n";
                     else
                         s_deathstring = " goes to pieces\n";
-
                     return strcat(pe_target.netname, s_deathstring);
-
                 } else if (pf_deathmsg == DMSG_GREN_PIPE) {
-
                     return strcat(pe_target.netname, " ambushes himself with his own pipebombs\n");
-
                 }
-
                 else if (pf_deathmsg == 40)
                     s_deathstring = " tried to juggle his own pipebombs\n";
                 else if (pf_deathmsg == DMSG_GREN_GAS)
@@ -2249,6 +2237,8 @@ string (entity pe_target, entity pe_attacker, float pf_deathmsg) GetDeathMessage
                     s_deathstring = " gets too friendly with his sentry gun\n";
                 else if (pf_deathmsg == 39)
                     s_deathstring = " dispenses with himself\n";
+                else if (pf_deathmsg == DMSG_PLASMA)
+                    s_deathstring " styles his hair with his plasma gun\n";
 
                 return strcat(pe_target.netname, s_deathstring);
 
@@ -2518,7 +2508,7 @@ string (entity pe_target, entity pe_attacker, float pf_deathmsg) GetDeathMessage
                 } else if (pf_deathmsg == 39) {
                     s_deathstring = " didn't insert the correct change into ";
                     s_deathstring2 = "'s dispenser.\n";
-                } else if (pf_deathmsg == 37) {
+                } else if (pf_deathmsg == DMG_PLASMA) {
                     s_deathstring = " gets melted by ";
                     s_deathstring2 = "'s plasma gun.\n";
                 }
