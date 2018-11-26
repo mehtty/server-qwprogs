@@ -853,7 +853,8 @@ string(float num) ClassToString =
     if (num == 4) return "Demoman";
     if (num == 5) return "Medic";
     if (num == 6) return "HWGuy";
-    if (num == 7) return "Pyro";
+    if (num == 7 && !plasmaclass) return "Pyro";
+    if (num == 7 && plasmaclass) return "Plasma";
     if (num == 8) return "Spy";
     if (num == 9) return "Engineer";
     if (num == 11) return "Civilian";
