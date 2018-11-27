@@ -146,6 +146,7 @@ void () W_Precache = {
     precache_sound("weapons/dartgun.wav");
     precache_sound("weapons/plasma.wav");
     precache_model("progs/plasma.mdl");
+    precache_model("progs/v_plasma.mdl");
 };
 
 float () crandom = {
