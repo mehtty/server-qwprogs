@@ -116,9 +116,17 @@ void () TeleGrenadeTouch = {
 };
 
 float (vector org) TestTeleLoc = {
+    float t;
+    t = 0;
     tracebox(org, self.owner.mins, self.owner.maxs, org, MOVE_NOMONSTERS, self.owner);
 
-    return trace_fraction;
+    if (trace_startsolid == 1) {
+        t = 0;
+    } else {
+        t = trace_fraction;
+    }
+
+    return t;
 }
 
 void (entity player, vector dest) PerformTele = {
