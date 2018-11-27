@@ -261,8 +261,11 @@ void () tdeath_touch = {
         }
     }
 
-    if (other.health)
+    if (other.health || other.classname == "building_dispenser"
+        || other.classname == "building_sentrygun") {
         T_Damage(other, self, self, 5000);
+    }
+        
 
     if (other.think == TeamFortress_DetpackExplode) {
         other.solid = SOLID_NOT;

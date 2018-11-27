@@ -116,20 +116,21 @@ void () TeleGrenadeTouch = {
 };
 
 float (vector org) TestTeleLoc = {
-    float good;
-    good = 0;
-    tracebox(org, self.owner.mins, self.owner.maxs, org, TRUE, self.owner);
+    tracebox(org, self.owner.mins, self.owner.maxs, org, MOVE_NOMONSTERS, self.owner);
 
-    if (trace_startsolid == 1) {
-        dprint("in solid\n");
-    } else if (trace_startsolid == 0 && trace_fraction == 1) {
-        dprint("teleport is fine");
-        good = 1;
-    } else {
-        dprint(strcat("trace fraction: ", ftos(trace_fraction)));
-        dprint(strcat("\ntrace_startsolid: ", ftos(trace_startsolid)));
-    }
-    return good;
+    return trace_fraction;
+}
+
+void (entity player, vector dest) PerformTele = {
+    // put a tfog where the player was
+    spawn_tfog(player.origin);
+
+    // spawn a tfog flash at the destination
+    spawn_tfog(dest);
+
+    setorigin(player, dest);
+
+    spawn_tdeath(dest, player);
 }
 
 void () TeleGrenadeExplode = {
@@ -143,8 +144,8 @@ void () TeleGrenadeExplode = {
     if (self.flags && FL_ONGROUND) {
         org = org + '0 0 25';
     }
-      
-    test = TestTeleLoc(org);
+    modorg = org;
+    test = TestTeleLoc(modorg);
 
     if (test == 0) {
         // loop through 30x30x50 unit box to test for tele position
@@ -155,7 +156,6 @@ void () TeleGrenadeExplode = {
             modorg_x += xloop;
             test = TestTeleLoc(modorg);
             if (test == 1) {
-                setorigin(self.owner, modorg);
                 break;
             }
 
@@ -163,7 +163,6 @@ void () TeleGrenadeExplode = {
                 modorg_y += yloop;
                 test = TestTeleLoc(modorg);
                 if (test == 1) {
-                    setorigin(self.owner, modorg);
                     break;
                 }
 
@@ -171,24 +170,23 @@ void () TeleGrenadeExplode = {
                     modorg_z += zloop;
                     test = TestTeleLoc(modorg);
                     if (test == 1) {
-                        setorigin(self.owner, modorg);
                         break;
                     }
                 }
 
                 if (test == 1) {
-                    setorigin(self.owner, modorg);
                     break;
                 }
             }
 
             if (test == 1) {
-                setorigin(self.owner, modorg);
                 break;
             }
         }
-    } else {
-        setorigin(self.owner, org);
+    }
+    
+    if (test == 1) {
+        PerformTele(self.owner, modorg);
     }
 
     WriteByte(MSG_MULTICAST, SVC_TEMPENTITY);
