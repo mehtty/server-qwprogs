@@ -174,7 +174,7 @@ void () TeleGrenadeExplode = {
                     break;
                 }
 
-                for (zloop = -50; zloop <= 50; zloop += 10) {
+                for (zloop = -30; zloop <= 30; zloop += 10) {
                     modorg_z += zloop;
                     test = TestTeleLoc(modorg);
                     if (test == 1) {
