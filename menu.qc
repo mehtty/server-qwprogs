@@ -563,10 +563,10 @@ void () Menu_Spy_Skin = {
     local string s_medic    = Q"\s[5]\s Medic      \n";
     local string s_hwguy    = Q"\s[6]\s HWGuy      \n";
     local string s_pyro     = Q"\s[7]\s Pyro       \n";
-    local string s_plasma   = Q"\s[7]\s Plasma  ";
+    local string s_plasma   = Q"\s[7]\s Plasma     \n";
     local string s_spy      = Q"\s[8]\s Spy        \n";
     local string s_engineer = Q"\s[9]\s Engineer   \n";
-    local string s_nothing  = Q"\n\s[0]\s Nothing    \n";
+    local string s_nothing  = Q"\n\s[0]\s Nothing  \n";
 
     if (plasmaclass) {
         Status_Menu(self, Menu_Spy_Skin_Input, s_disguise, s_scout, s_sniper, s_soldier, s_demoman, s_medic, s_hwguy, s_plasma, s_spy, s_engineer, s_nothing);
