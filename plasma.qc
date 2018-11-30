@@ -120,7 +120,7 @@ float (vector org) TestTeleLoc = {
     t = 0;
     tracebox(org, self.owner.mins, self.owner.maxs, org, MOVE_NOMONSTERS, self.owner);
 
-    if (trace_startsolid != 1) 
+    if (trace_startsolid != 1) {
         t = trace_fraction;
     }
 
@@ -144,6 +144,7 @@ void () TeleGrenadeExplode = {
         vector org, modorg;
         float theight = 25;
         float twide = 15;
+        float test;
 
         org = self.origin;
         modorg = org;
@@ -162,19 +163,19 @@ void () TeleGrenadeExplode = {
             modorg = org;
             // find out how far from ground, ensure it's 25+ units
             modorg_z -= theight;
-            traceline(org, mordorg, MOVE_NOMONSTERS, self.owner);
+            traceline(org, modorg, MOVE_NOMONSTERS, self.owner);
 
             // if it's 25u or more, leave origin as is
-            if (trace_faction != 1) {
+            if (trace_fraction != 1) {
                 // if it's less than 25u, add diff to z origin
                 modorg = org;
-                utoground = floor(theight * trace_faction);
+                utoground = floor(theight * trace_fraction);
                 modorg_z -= utoground;
             }
             
             // now test for walls
             modorg_x -= twide;
-            traceline(org, mordorg, MOVE_NOMONSTERS, self.owner);
+            traceline(org, modorg, MOVE_NOMONSTERS, self.owner);
 
             if (trace_fraction != 1) {
                 modorg_x += twide;
@@ -183,7 +184,7 @@ void () TeleGrenadeExplode = {
             }
 
             modorg_y -= twide;
-            traceline(org, mordorg, MOVE_NOMONSTERS, self.owner);
+            traceline(org, modorg, MOVE_NOMONSTERS, self.owner);
 
             if (trace_fraction != 1) {
                 modorg_y += twide;
