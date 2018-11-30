@@ -509,6 +509,7 @@ float intermission_exittime;
 // add clientkill ent defs
 .float clientkillforce;
 .float clientkillfree;
+.float lifenum;
 
 //============================================================================
 

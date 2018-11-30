@@ -140,65 +140,66 @@ void (entity player, vector dest) PerformTele = {
 }
 
 void () TeleGrenadeExplode = {
-    deathmsg = DMSG_GREN_TELE;
-    vector org, modorg;
-    float theight = 25;
-    float twide = 15;
+    if (self.lifenum == self.owner.lifenum) {
+        vector org, modorg;
+        float theight = 25;
+        float twide = 15;
 
-    org = self.origin;
-    modorg = org;
-    test = 0;
-    
-    if (self.flags && FL_ONGROUND) {
-        modorg_z += 25;
-    }
-    test = TestTeleLoc(modorg);
-
-    if (test == 0) {
-        float utoground, utox, utoy;
-        utoground = 0;
-        utox = 0;
-        utoy = 0;
+        org = self.origin;
         modorg = org;
-        // find out how far from ground, ensure it's 25+ units
-        modorg_z -= theight;
-        traceline(org, mordorg, MOVE_NOMONSTERS, self.owner);
-
-        // if it's 25u or more, leave origin as is
-        if (trace_faction != 1) {
-            // if it's less than 25u, add diff to z origin
-            modorg = org;
-            utoground = floor(theight * trace_faction);
-            modorg_z -= utoground;
-        }
+        test = 0;
         
-        // now test for walls
-        modorg_x -= twide;
-        traceline(org, mordorg, MOVE_NOMONSTERS, self.owner);
-
-        if (trace_fraction != 1) {
-            modorg_x += twide;
-            utox = floor(twide * trace_fraction);
-            modorg_x += (twide - utox);
+        if (self.flags && FL_ONGROUND) {
+            modorg_z += 25;
         }
-
-        modorg_y -= twide;
-        traceline(org, mordorg, MOVE_NOMONSTERS, self.owner);
-
-        if (trace_fraction != 1) {
-            modorg_y += twide;
-            utoy = floor(twide * trace_fraction);
-            modorg_y += (twide - utoy);
-        }
-        
         test = TestTeleLoc(modorg);
-    }
-    
-    if (test == 1) {
-        PerformTele(self.owner, modorg);
-    } else {
-        dprint("no good tele point found");
-        // maybe kill person here if this math is right
+
+        if (test == 0) {
+            float utoground, utox, utoy;
+            utoground = 0;
+            utox = 0;
+            utoy = 0;
+            modorg = org;
+            // find out how far from ground, ensure it's 25+ units
+            modorg_z -= theight;
+            traceline(org, mordorg, MOVE_NOMONSTERS, self.owner);
+
+            // if it's 25u or more, leave origin as is
+            if (trace_faction != 1) {
+                // if it's less than 25u, add diff to z origin
+                modorg = org;
+                utoground = floor(theight * trace_faction);
+                modorg_z -= utoground;
+            }
+            
+            // now test for walls
+            modorg_x -= twide;
+            traceline(org, mordorg, MOVE_NOMONSTERS, self.owner);
+
+            if (trace_fraction != 1) {
+                modorg_x += twide;
+                utox = floor(twide * trace_fraction);
+                modorg_x += (twide - utox);
+            }
+
+            modorg_y -= twide;
+            traceline(org, mordorg, MOVE_NOMONSTERS, self.owner);
+
+            if (trace_fraction != 1) {
+                modorg_y += twide;
+                utoy = floor(twide * trace_fraction);
+                modorg_y += (twide - utoy);
+            }
+            
+            test = TestTeleLoc(modorg);
+        }
+        
+        if (test == 1) {
+            PerformTele(self.owner, modorg);
+        } else {
+            dprint("no good tele point found");
+            // maybe kill person here if this math is right
+        }
     }
 
     WriteByte(MSG_MULTICAST, SVC_TEMPENTITY);

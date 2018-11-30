@@ -77,6 +77,7 @@ void (entity targ, entity attacker) Killed = {
         WriteByte(MSG_ALL, SVC_KILLEDMONSTER);
     }
 
+    self.lifenum += 1;
     ClientObituary(self, attacker);
     self.takedamage = DAMAGE_NO;
     self.touch = SUB_Null;

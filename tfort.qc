@@ -956,6 +956,7 @@ void () TeamFortress_GrenadePrimed = {
     } else if (self.weapon == GR_TYPE_TELE) {
         newmis.touch = TeleGrenadeTouch;
         newmis.think = TeleGrenadeExplode;
+        newmis.lifenum = newmis.owner.lifenum;
         newmis.skin = 2;
         newmis.avelocity = '0 300 0';
         setmodel(newmis, "progs/biggren.mdl");
