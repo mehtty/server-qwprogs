@@ -30,7 +30,7 @@ void () plasmaRocket_touch = {
     T_RadiusDamage(self, self.owner, damg, other);
 
     WriteByte(MSG_MULTICAST, SVC_TEMPENTITY);
-    WriteByte(MSG_MULTICAST, TE_SPIKE);
+    WriteByte(MSG_MULTICAST, TE_TAREXPLOSION);
     WriteCoord(MSG_MULTICAST, self.origin_x);
     WriteCoord(MSG_MULTICAST, self.origin_y);
     WriteCoord(MSG_MULTICAST, self.origin_z);
