@@ -6,6 +6,39 @@
 void () TeleGrenadeTouch;
 void () plasma_touch;
 
+void () plasmaRocket_touch = {
+    if (self.voided)
+        return;
+    self.voided = 1;
+
+    if (other.solid == SOLID_TRIGGER)
+        return;
+
+    if (pointcontents(self.origin) == CONTENT_SKY) {
+        dremove(self);
+        return;
+    }
+    float damg;
+    damg = 40;
+    deathmsg = self.weapon;
+
+    if (other.health) {
+        TF_T_Damage(other, self, self.owner, damg, TF_TD_NOTTEAM,
+                    TF_TD_ELECTRICITY);
+    }
+
+    T_RadiusDamage(self, self.owner, damg, other);
+
+    WriteByte(MSG_MULTICAST, SVC_TEMPENTITY);
+    WriteByte(MSG_MULTICAST, TE_SPIKE);
+    WriteCoord(MSG_MULTICAST, self.origin_x);
+    WriteCoord(MSG_MULTICAST, self.origin_y);
+    WriteCoord(MSG_MULTICAST, self.origin_z);
+    multicast(self.origin, MULTICAST_PHS);
+
+    dremove(self);
+};
+
 void (vector org, vector dir) launch_plasma = {
     newmis = spawn();
     newmis.voided = 0;
@@ -81,38 +114,7 @@ void () W_FirePlasmaRocket = {
     KickPlayer(-3, self);
 };
 
-void () plasmaRocket_touch = {
-    if (self.voided)
-        return;
-    self.voided = 1;
 
-    if (other.solid == SOLID_TRIGGER)
-        return;
-
-    if (pointcontents(self.origin) == CONTENT_SKY) {
-        dremove(self);
-        return;
-    }
-    float damg;
-    damg = 40;
-    deathmsg = self.weapon;
-
-    if (other.health) {
-        TF_T_Damage(other, self, self.owner, damg, TF_TD_NOTTEAM,
-                    TF_TD_ELECTRICITY);
-    }
-
-    T_RadiusDamage(self, self.owner, damg, other);
-
-    WriteByte(MSG_MULTICAST, SVC_TEMPENTITY);
-    WriteByte(MSG_MULTICAST, TE_SPIKE);
-    WriteCoord(MSG_MULTICAST, self.origin_x);
-    WriteCoord(MSG_MULTICAST, self.origin_y);
-    WriteCoord(MSG_MULTICAST, self.origin_z);
-    multicast(self.origin, MULTICAST_PHS);
-
-    dremove(self);
-};
 
 void () plasma_touch = {
     if (self.voided)

@@ -1784,6 +1784,11 @@ float () CheckForReload = {
             TeamFortress_ReloadCurrentWeapon();
             return 1;
         }
+    } else if (self.current_weapon == WEAP_PLASMAROCKET) {
+        if ((self.reload_plasma_rocket >= RE_PLASMAROCKET) && (self.ammo_rockets > 0)) {
+            TeamFortress_ReloadCurrentWeapon();
+            return 1;
+        }
     }
     return 0;
 };
@@ -1807,7 +1812,11 @@ float (float weap) CheckForAmmo = {
     } else if (weap == WEAP_PLASMA) {
         if (self.reload_plasma >= 1 && self.ammo_cells > self.reload_plasma)
             return 1;
+    } else if (weap == WEAP_PLASMAROCKET) {
+        if (self.reload_plasma_rocket >= 1 && self.ammo_rockets > self.reload_plasma_rocket)
+            return 1;
     }
+    
     return 0;
 };
 
@@ -1954,8 +1963,13 @@ void () W_Attack = {
         CheckForReload();
         Attack_Finished(0.1);        
     } else if (self.current_weapon == WEAP_PLASMAROCKET) {
+        if (CheckForReload() == TRUE)
+            return;
         player_rocket1();
         W_FirePlasmaRocket();
+        self.reload_plasma_rocket = self.reload_plasma_rocket + 1;
+        Status_Refresh(self);
+        CheckForReload();
         Attack_Finished(0.5);
     } else if (self.current_weapon == WEAP_MEDIKIT) {
         sound(self, CHAN_WEAPON, "weapons/ax1.wav", 1, ATTN_NORM);

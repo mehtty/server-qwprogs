@@ -348,7 +348,7 @@ void (entity targ, entity inflictor, entity attacker, float damage,
                     }
                 break;
                 case "plasmarocket":
-                    moment = damage * 2;
+                    moment = damage * 3;
                 break;
                 default:
                     moment = damage;

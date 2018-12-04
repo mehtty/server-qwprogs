@@ -526,8 +526,7 @@ void (float weap) TeamFortress_ReloadWeapon = {
             sprint(self, PRINT_HIGH, "Clip full\n");
             return;
         }
-        if ((30 - self.reload_plasma) ==
-            self.ammo_cells) {
+        if ((30 - self.reload_plasma) == self.ammo_cells) {
             sprint(self, PRINT_HIGH, "All cells are in the clip\n");
             return;
         }
@@ -567,8 +566,7 @@ void (float weap) TeamFortress_ReloadWeapon = {
             sprint(self, PRINT_HIGH, "Clip full\n");
             return;
         }
-        if ((6 - self.reload_plasma_rocket) ==
-            self.ammo_rockets) {
+        if ((6 - self.reload_plasma_rocket) == self.ammo_rockets) {
             sprint(self, PRINT_HIGH, "All rockets are in the clip\n");
             return;
         }
