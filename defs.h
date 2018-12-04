@@ -672,7 +672,7 @@
 #define WEAP_TRANQ			262144
 #define WEAP_LASER			524288
 #define WEAP_PLASMA			1048576
-#define WEAP_AIRGUN			2097152
+#define WEAP_PLASMAROCKET		2097152
 // still room for 10 more weapons
 // but we can remove some by giving the weapons
 // a weapon mode (like the rifle)
@@ -989,7 +989,7 @@
 #define PC_PLASMA_INITARMORTYPE		0.6
 #define PC_PLASMA_ARMORCLASSES		31	// ALL
 #define PC_PLASMA_INITARMORCLASS		0	
-#define PC_PLASMA_WEAPONS			WEAP_PLASMA | WEAP_AIRGUN | WEAP_AXE | WEAP_SHOTGUN
+#define PC_PLASMA_WEAPONS			WEAP_PLASMA | WEAP_PLASMAROCKET | WEAP_AXE | WEAP_SHOTGUN
 #define PC_PLASMA_MAXAMMO_SHOT		40
 #define PC_PLASMA_MAXAMMO_NAIL		50
 #define PC_PLASMA_MAXAMMO_CELL		200

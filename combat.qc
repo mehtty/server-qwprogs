@@ -339,10 +339,19 @@ void (entity targ, entity inflictor, entity attacker, float damage,
                 targ.origin - (inflictor.absmin + inflictor.absmax) * 0.5;
             dir = normalize(dir);
 
-            if (inflictor.classname == "plasma" && targ.netname == attacker.netname) {
-                moment = damage * 4;
-            } else {
-                moment = damage;
+            switch (inflictor.classname) {
+                case "plasma":
+                    if (targ.netname == attacker.netname) {
+                        moment = damage * 4;
+                    } else {
+                        moment = damage;
+                    }
+                break;
+                case "plasmarocket":
+                    moment = damage * 2;
+                break;
+                default:
+                    moment = damage;
             }
 
             if (targ.playerclass == PC_HVYWEAP) {
@@ -493,10 +502,15 @@ void (entity inflictor, entity attacker, float damage,
     local entity head;
     local vector org;
 
-    if (inflictor.classname == "plasma") {
-        radius = damage * 2 + 40;
-    } else {
-        radius = damage + 40;
+    switch (inflictor.classname) {
+        case "plasma":
+            radius = damage * 2 + 40;
+        break;
+        case "plasmarocket":
+            radius = damage * 2;
+        break;
+        default:
+            radius = damage + 40;
     }
 
     head = findradius(inflictor.origin, radius);

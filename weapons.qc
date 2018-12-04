@@ -31,7 +31,7 @@ void () TeamFortress_AssaultWeapon;
 void () TeamFortress_IncendiaryCannon;
 void () TeamFortress_FlameThrower;
 void () TeamFortress_Plasma;
-void () TeamFortress_AirGun;
+void () TeamFortress_PlasmaRocket;
 void (float inp) TeamFortress_PrimeGrenade;
 void () TeamFortress_ThrowGrenade;
 void (float inp) TeamFortress_PrimeThrowGrenade;
@@ -102,7 +102,10 @@ void () W_FireIncendiaryCannon;
 void () W_FireTranq;
 void () W_FireLaser;
 void () W_FirePlasma;
-void () W_FireAirGun;
+void () W_FirePlasmaRocket;
+void () W_Reload_plasma;
+void () W_Reload_plasmaRocket;
+
 
 void () HallucinationTimer;
 void () TranquiliserTimer;
@@ -1555,7 +1558,7 @@ void (entity pl) W_SetCurrentAmmo = {
         }
         pl.items = pl.items | IT_CELLS;
         pl.weapon = IT_GRENADE_LAUNCHER;
-    } else if (pl.current_weapon == WEAP_AIRGUN) {
+    } else if (pl.current_weapon == WEAP_PLASMAROCKET) {
         pl.currentammo = pl.ammo_rockets;
         if (!(pl.tfstate & TFSTATE_RELOADING)) {
             pl.weaponmodel = "progs/v_irock.mdl";
@@ -1744,15 +1747,6 @@ void () W_Reload_grenade_launcher = {
 void () W_Reload_rocket_launcher = {
     self.owner.tfstate = self.owner.tfstate - (self.owner.tfstate & TFSTATE_RELOADING);
     self.owner.weaponmodel = "progs/v_rock2.mdl";
-    sprint(self.owner, PRINT_LOW, "Finished reloading\n");
-    dremove(self);
-    W_WeaponState_Load(self.owner, 0);
-    Status_Refresh(self.owner);
-};
-
-void () W_Reload_plasma = {
-    self.owner.tfstate = self.owner.tfstate - (self.owner.tfstate & TFSTATE_RELOADING);
-    self.owner.weaponmodel = "progs/v_plasma.mdl";
     sprint(self.owner, PRINT_LOW, "Finished reloading\n");
     dremove(self);
     W_WeaponState_Load(self.owner, 0);
@@ -1959,10 +1953,10 @@ void () W_Attack = {
         Status_Refresh(self);
         CheckForReload();
         Attack_Finished(0.1);        
-    } else if (self.current_weapon == WEAP_AIRGUN) {
+    } else if (self.current_weapon == WEAP_PLASMAROCKET) {
         player_rocket1();
-        W_FireAirGun();
-        Attack_Finished(1);
+        W_FirePlasmaRocket();
+        Attack_Finished(0.5);
     } else if (self.current_weapon == WEAP_MEDIKIT) {
         sound(self, CHAN_WEAPON, "weapons/ax1.wav", 1, ATTN_NORM);
         r = random();
@@ -2023,7 +2017,7 @@ float (float weap) W_GetSlot = {
         return 1;
     } else if (weap == WEAP_SUPER_SHOTGUN
                 || weap == WEAP_AUTO_RIFLE
-                || weap == WEAP_AIRGUN) {
+                || weap == WEAP_PLASMAROCKET) {
         return 2;
     } else if (weap == WEAP_SHOTGUN) {
         if (self.playerclass == PC_SCOUT)
@@ -2150,7 +2144,7 @@ float () W_WeaponSlot2 = {
     else if (self.playerclass == PC_DEMOMAN) {
         return WEAP_GRENADE_LAUNCHER; // weaponmode = 1 (pipebomb launcher)
     } else if (self.playerclass == PC_PLASMA)
-        return WEAP_AIRGUN;
+        return WEAP_PLASMAROCKET;
     return 0;
 };
 

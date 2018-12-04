@@ -45,12 +45,74 @@ void () W_FirePlasma = {
     KickPlayer(-3, self);
 };
 
-void () W_FireAirGun = {
+void () W_FirePlasmaRocket = {
+
+    if (self.ammo_rockets < 1) {
+        W_ChangeToBestWeapon();
+        return;
+    }
+
+    self.ammo_rockets = self.ammo_rockets - 1;
+    self.currentammo = self.ammo_rockets;
+    sound(self, CHAN_WEAPON, "weapons/sgun1.wav", 1, ATTN_NORM);
+
+    newmis = spawn();
+    newmis.owner = self;
+    newmis.movetype = MOVETYPE_FLYMISSILE;
+    newmis.solid = SOLID_BBOX;
+
+    makevectors(self.v_angle);
+    newmis.velocity = v_forward;
+    newmis.velocity = newmis.velocity * 1500;
+    newmis.angles = vectoangles(newmis.velocity);
+
+    newmis.touch = plasmaRocket_touch;
+    newmis.voided = 0;
+
+    newmis.nextthink = time + 2;
+    newmis.think = SUB_Remove;
+
+    newmis.weapon = DMSG_ROCKETL;
+    newmis.classname = "plasmarocket";
+    setmodel(newmis, "progs/plasma.mdl");
+    setsize(newmis, '0 0 0', '0 0 0');
+    setorigin(newmis, self.origin + v_forward * 8 + '0 0 16');
 
     KickPlayer(-3, self);
 };
 
-.float hit_z;
+void () plasmaRocket_touch = {
+    if (self.voided)
+        return;
+    self.voided = 1;
+
+    if (other.solid == SOLID_TRIGGER)
+        return;
+
+    if (pointcontents(self.origin) == CONTENT_SKY) {
+        dremove(self);
+        return;
+    }
+    float damg;
+    damg = 40;
+    deathmsg = self.weapon;
+
+    if (other.health) {
+        TF_T_Damage(other, self, self.owner, damg, TF_TD_NOTTEAM,
+                    TF_TD_ELECTRICITY);
+    }
+
+    T_RadiusDamage(self, self.owner, damg, other);
+
+    WriteByte(MSG_MULTICAST, SVC_TEMPENTITY);
+    WriteByte(MSG_MULTICAST, TE_SPIKE);
+    WriteCoord(MSG_MULTICAST, self.origin_x);
+    WriteCoord(MSG_MULTICAST, self.origin_y);
+    WriteCoord(MSG_MULTICAST, self.origin_z);
+    multicast(self.origin, MULTICAST_PHS);
+
+    dremove(self);
+};
 
 void () plasma_touch = {
     if (self.voided)
@@ -97,15 +159,33 @@ void () TeamFortress_Plasma = {
     W_SetCurrentAmmo(self);
 };
 
-void () TeamFortress_AirGun = {
-    if (!(self.weapons_carried & WEAP_AIRGUN)) {
+void () W_Reload_plasma = {
+    self.owner.tfstate = self.owner.tfstate - (self.owner.tfstate & TFSTATE_RELOADING);
+    self.owner.weaponmodel = "progs/v_plasma.mdl";
+    sprint(self.owner, PRINT_LOW, "Finished reloading\n");
+    dremove(self);
+    W_WeaponState_Load(self.owner, 0);
+    Status_Refresh(self.owner);
+};
+
+void () W_Reload_plasmaRocket = {
+    self.owner.tfstate = self.owner.tfstate - (self.owner.tfstate & TFSTATE_RELOADING);
+    self.owner.weaponmodel = "progs/v_irock.mdl";
+    sprint(self.owner, PRINT_LOW, "Finished reloading\n");
+    dremove(self);
+    W_WeaponState_Load(self.owner, 0);
+    Status_Refresh(self.owner);
+};
+
+void () TeamFortress_PlasmaRocket = {
+    if (!(self.weapons_carried & WEAP_PLASMAROCKET)) {
         return;
     }
     if (self.ammo_rockets < 1) {
         sprint(self, PRINT_HIGH, "Not enough ammo\n");
         return;
     }
-    self.current_weapon = WEAP_AIRGUN;
+    self.current_weapon = WEAP_PLASMAROCKET;
     W_SetCurrentAmmo(self);
 };
 
