@@ -810,6 +810,10 @@ string(entity pl) ClipSizeToString =
         if ((max - pl.reload_plasma) > pl.ammo_cells)
             pl.reload_plasma = (max - pl.ammo_cells);
         num = (max - pl.reload_plasma);
+    } else if (pl.current_weapon == WEAP_PLASMAROCKET) {
+        if ((max - pl.reload_plasma_rocket) > pl.ammo_rockets)
+            pl.reload_plasma_rocket = (max - pl.ammo_rockets);
+        num = (max - pl.reload_plasma_rocket);
     } else
         return "";
 
@@ -839,6 +843,8 @@ float(entity pl) GetClipSize =
             return RE_ROCKET_LAUNCHER;
         case WEAP_PLASMA:
             return RE_PLASMA;
+        case WEAP_PLASMAROCKET:
+            return RE_PLASMAROCKET;
         default:
             return 0;
     }

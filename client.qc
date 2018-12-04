@@ -1203,6 +1203,7 @@ void () PutClientInServer = {
     self.reload_grenade_launcher = 0;
     self.reload_rocket_launcher = 0;
     self.reload_plasma = 0;
+    self.reload_plasma_rocket = 0;
 
     self.immune_to_check = time + 10;
     self.fire_held_down = 0;

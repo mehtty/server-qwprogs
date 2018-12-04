@@ -422,6 +422,7 @@ void (entity targ, entity inflictor, entity attacker, float damage,
         if (targ == attacker)
             return;
 
+    // make plasma climbing feasible damage wise, cut dam 75% if it's owner
     if (targ == attacker && inflictor.classname == "plasma") {
         take = take / 4;
     }
