@@ -270,13 +270,25 @@ void () TeleGrenadeExplode = {
         org = self.origin;
         modorg = org;
         test = 0;
-        
-        if (self.flags && FL_ONGROUND) {
-            modorg_z += 25;
-        }
+        // put player feet at grenade level
+        modorg_z += theight;
         test = TestTeleLoc(modorg);
 
         if (test == 0) {
+            // test if on an angled floor
+            traceline(modorg, mordorg - '0 0 50', MOVE_NOMONSTERS, self.owner);
+            if (trace_fraction != 1) {
+                vector ang = self.angles;
+                ang_x *= -1;
+                makevectors(ang);
+                vector coplanar = v_forward-(v_forward*trace_plane_normal)*trace_plane_normal;
+                // pitch, yaw, 0
+                vector angles = vectoangles(coplanar, trace_plane_normal);
+                dprint(strcat("angles: ", vtos(angles)));
+
+                // modify modorg appropriately
+            }
+
             modorg = TestTeleDir(modorg, 1, theight, "z");
             modorg = TestTeleDir(modorg, 0, theight, "z");
             modorg = TestTeleDir(modorg, 1, twide, "y");
