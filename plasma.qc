@@ -284,7 +284,6 @@ void () TeleGrenadeExplode = {
                 vector coplanar = v_forward-(v_forward*trace_plane_normal)*trace_plane_normal;
                 // pitch, yaw, 0
                 vector angles = vectoangles(coplanar, trace_plane_normal);
-                dprint(strcat("angles: ", vtos(angles)));
 
                 if (angles_x > 0) {
                     modorg_z += theight;
