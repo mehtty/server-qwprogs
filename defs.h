@@ -451,7 +451,7 @@
 #define TF_TEAM_SCORES          125 // Display team scores
 #define TF_STATUS_QUERY         126 // Displays current team balance and equilization ratios
 #define TF_NEXTTIP              127 // Shows the next general/class tip
-#define TF_CHANGEPC_PLASMA      128 // Change class to Plasma
+#define TF_CHANGEPC_PLASMA      117 // Change class to Plasma
 // unused                       129
 #define TF_TOGGLEVOTE           130 // Toggle vote menu on/off
 #define TF_VOTENEXT             131 // Vote to start voting for next map
@@ -671,8 +671,8 @@
 #define WEAP_DETPACK			131072
 #define WEAP_TRANQ			262144
 #define WEAP_LASER			524288
-#define WEAP_PLASMA			1048576
-#define WEAP_PLASMAROCKET		2097152
+#define WEAP_PLASMAROCKET			1048576
+
 // still room for 10 more weapons
 // but we can remove some by giving the weapons
 // a weapon mode (like the rifle)
@@ -685,7 +685,6 @@
 #define RE_SUPER_SHOTGUN	16 // 8 shots
 #define RE_GRENADE_LAUNCHER	6
 #define RE_ROCKET_LAUNCHER	4
-#define RE_PLASMA			30
 #define RE_PLASMAROCKET		6
 #define RE_SNIPER_RIFLE		1
 
@@ -694,7 +693,6 @@
 #define RE_SUPER_SHOTGUN_TIME		3
 #define RE_GRENADE_LAUNCHER_TIME	4
 #define RE_ROCKET_LAUNCHER_TIME		5
-#define RE_PLASMA_TIME				5
 #define RE_PLASMA_ROCKET_TIME				5
 
 // Maximum velocity you can move and fire the Sniper Rifle
@@ -991,7 +989,7 @@
 #define PC_PLASMA_INITARMORTYPE		0.6
 #define PC_PLASMA_ARMORCLASSES		31	// ALL
 #define PC_PLASMA_INITARMORCLASS		0	
-#define PC_PLASMA_WEAPONS			WEAP_PLASMA | WEAP_PLASMAROCKET | WEAP_AXE | WEAP_SHOTGUN
+#define PC_PLASMA_WEAPONS			WEAP_PLASMAROCKET | WEAP_AXE | WEAP_SHOTGUN | WEAP_SUPER_SHOTGUN
 #define PC_PLASMA_MAXAMMO_SHOT		40
 #define PC_PLASMA_MAXAMMO_NAIL		50
 #define PC_PLASMA_MAXAMMO_CELL		200

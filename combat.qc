@@ -339,20 +339,7 @@ void (entity targ, entity inflictor, entity attacker, float damage,
                 targ.origin - (inflictor.absmin + inflictor.absmax) * 0.5;
             dir = normalize(dir);
 
-            switch (inflictor.classname) {
-                case "plasma":
-                    if (targ.netname == attacker.netname) {
-                        moment = damage * 4;
-                    } else {
-                        moment = damage;
-                    }
-                break;
-                case "plasmarocket":
-                    moment = damage * 3;
-                break;
-                default:
-                    moment = damage;
-            }
+            moment = damage;
 
             if (targ.playerclass == PC_HVYWEAP) {
                 moment = moment / 4;
@@ -421,11 +408,6 @@ void (entity targ, entity inflictor, entity attacker, float damage,
     if (T_flags & TF_TD_NOTSELF)
         if (targ == attacker)
             return;
-
-    // make plasma climbing feasible damage wise, cut dam 75% if it's owner
-    if (targ == attacker && inflictor.classname == "plasma") {
-        take = take / 4;
-    }
 
     if (take < 1)
         take = 1;
@@ -503,16 +485,7 @@ void (entity inflictor, entity attacker, float damage,
     local entity head;
     local vector org;
 
-    switch (inflictor.classname) {
-        case "plasma":
-            radius = damage * 2 + 40;
-        break;
-        case "plasmarocket":
-            radius = damage * 2;
-        break;
-        default:
-            radius = damage + 40;
-    }
+    radius = damage + 40;
 
     head = findradius(inflictor.origin, radius);
     while (head) {

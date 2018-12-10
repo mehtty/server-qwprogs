@@ -1205,7 +1205,6 @@ void () PutClientInServer = {
     self.reload_super_shotgun = 0;
     self.reload_grenade_launcher = 0;
     self.reload_rocket_launcher = 0;
-    self.reload_plasma = 0;
     self.reload_plasma_rocket = 0;
 
     self.immune_to_check = time + 10;
@@ -2243,7 +2242,7 @@ string (entity pe_target, entity pe_attacker, float pf_deathmsg) GetDeathMessage
                 else if (pf_deathmsg == 39)
                     s_deathstring = " dispenses with himself\n";
                 else if (pf_deathmsg == DMSG_PLASMA)
-                    s_deathstring = " styles his hair with his plasma gun\n";
+                    s_deathstring = " swallows a big ball of his own plasma\n";
 
                 return strcat(pe_target.netname, s_deathstring);
 
@@ -2515,7 +2514,7 @@ string (entity pe_target, entity pe_attacker, float pf_deathmsg) GetDeathMessage
                     s_deathstring2 = "'s dispenser.\n";
                 } else if (pf_deathmsg == DMSG_PLASMA) {
                     s_deathstring = " gets melted by ";
-                    s_deathstring2 = "'s plasma gun.\n";
+                    s_deathstring2 = "'s plasma launcher.\n";
                 }
 
                 if (pe_attacker.has_disconnected == 1 || pe_attacker.netname == string_null) {

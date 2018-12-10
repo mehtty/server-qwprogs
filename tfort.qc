@@ -2064,7 +2064,7 @@ void () TeamFortress_SetEquipment = {
         self.need_shells = 1;
         self.need_nails = 0;
         self.need_rockets = 1;
-        self.need_cells = 1;
+        self.need_cells = 0;
 
         self.maxammo_rockets = PC_PLASMA_MAXAMMO_ROCKET;
         self.maxammo_nails = PC_PLASMA_MAXAMMO_NAIL;
@@ -2084,12 +2084,12 @@ void () TeamFortress_SetEquipment = {
         else
             self.maxarmor = PC_PLASMA_MAXARMOR;
         if (self.last_playerclass != self.playerclass)
-            self.current_weapon = WEAP_PLASMA;
+            self.current_weapon = WEAP_PLASMAROCKET;
 
         self.items_allowed = PC_PLASMA_WEAPONS;
         self.items =
             self.
-            items | IT_SHOTGUN | IT_ROCKET_LAUNCHER | IT_GRENADE_LAUNCHER;
+            items | IT_SHOTGUN | IT_ROCKET_LAUNCHER | IT_SUPER_SHOTGUN;
     } else if (self.playerclass == PC_CIVILIAN) {
         self.weapons_carried = self.weapons_carried | PC_CIVILIAN_WEAPONS;
 
