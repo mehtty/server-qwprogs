@@ -276,7 +276,7 @@ void () TeleGrenadeExplode = {
 
         if (test == 0) {
             // test if on an angled floor
-            traceline(modorg, mordorg - '0 0 50', MOVE_NOMONSTERS, self.owner);
+            traceline(modorg, modorg - '0 0 50', MOVE_NOMONSTERS, self.owner);
             if (trace_fraction != 1) {
                 vector ang = self.angles;
                 ang_x *= -1;
@@ -286,7 +286,9 @@ void () TeleGrenadeExplode = {
                 vector angles = vectoangles(coplanar, trace_plane_normal);
                 dprint(strcat("angles: ", vtos(angles)));
 
-                // modify modorg appropriately
+                if (angles_x > 0) {
+                    modorg_z += theight;
+                }
             }
 
             modorg = TestTeleDir(modorg, 1, theight, "z");
