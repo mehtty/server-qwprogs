@@ -40,13 +40,13 @@ void () PlasmaLauncher_touch = {
 
 void () W_FirePlasmaLauncher = {
 
-    if (self.ammo_rockets < 1) {
+    if (self.ammo_cells < 5) {
         W_ChangeToBestWeapon();
         return;
     }
 
-    self.ammo_rockets = self.ammo_rockets - 1;
-    self.currentammo = self.ammo_rockets;
+    self.ammo_cells = self.ammo_cells - 5;
+    self.currentammo = self.ammo_cells;
     sound(self, CHAN_WEAPON, "weapons/sgun1.wav", 1, ATTN_NORM);
 
     newmis = spawn();
