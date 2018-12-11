@@ -1546,12 +1546,12 @@ void (entity pl) W_SetCurrentAmmo = {
         pl.items = pl.items | IT_SHELLS;
         pl.weapon = IT_ROCKET_LAUNCHER;
     } else if (pl.current_weapon == WEAP_PLASMALAUNCHER) {
-        pl.currentammo = pl.ammo_rockets;
+        pl.currentammo = pl.ammo_cells;
         if (!(pl.tfstate & TFSTATE_RELOADING)) {
             pl.weaponmodel = "progs/v_irock.mdl";
             pl.weaponframe = 0;
         }
-        pl.items = pl.items | IT_ROCKETS;
+        pl.items = pl.items | IT_CELLS;
         pl.weapon = IT_ROCKET_LAUNCHER;
     } else if (pl.current_weapon == WEAP_MEDIKIT) {
         if (!old_medikit) {
@@ -1759,7 +1759,7 @@ float () CheckForReload = {
             return 1;
         }
     } else if (self.current_weapon == WEAP_PLASMALAUNCHER) {
-        if ((self.reload_plasmalauncher >= RE_PLASMALAUNCHER) && (self.ammo_rockets > 0)) {
+        if ((self.reload_plasmalauncher >= RE_PLASMALAUNCHER) && (self.ammo_cells > 5)) {
             TeamFortress_ReloadCurrentWeapon();
             return 1;
         }
@@ -1784,7 +1784,7 @@ float (float weap) CheckForAmmo = {
         if (self.reload_rocket_launcher >= 1 && self.ammo_rockets > self.reload_rocket_launcher)
             return 1;
     } else if (weap == WEAP_PLASMALAUNCHER) {
-        if (self.reload_plasmalauncher >= 1 && self.ammo_cells > self.reload_plasmalauncher * 5)
+        if (self.reload_plasmalauncher >= 1 && self.ammo_cells >= self.reload_plasmalauncher * 5)
             return 1;
     }
     
@@ -2049,14 +2049,13 @@ float (float inp) W_AmmoSlot = {
                     || self.playerclass == PC_MEDIC
                     || self.playerclass == PC_HVYWEAP
                     || self.playerclass == PC_SPY
-                    || self.playerclass == PC_ENGINEER)
+                    || self.playerclass == PC_ENGINEER
+                    || self.playerclass == PC_PLASMA)
                     && self.ammo_shells < 2)
             self.noammo = 1;
         else if (self.playerclass == PC_DEMOMAN && self.ammo_rockets < 1)
             self.noammo = 1;
         else if (self.playerclass == PC_PYRO && !plasmaclass && self.ammo_rockets < 3)
-            self.noammo = 1;
-        else if (self.playerclass == PC_PLASMA && self.ammo_rockets < 1)
             self.noammo = 1;
     } else if (inp == 3) {
         if (self.playerclass == PC_SCOUT

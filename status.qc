@@ -807,8 +807,8 @@ string(entity pl) ClipSizeToString =
             pl.reload_rocket_launcher = (max - pl.ammo_rockets);
         num = (max - pl.reload_rocket_launcher);
     } else if (pl.current_weapon == WEAP_PLASMALAUNCHER) {
-        if ((max - pl.reload_plasmalauncher) > pl.ammo_rockets)
-            pl.reload_plasmalauncher = (max - pl.ammo_rockets);
+        if ((max - pl.reload_plasmalauncher) > floor(pl.ammo_cells/5))
+            pl.reload_plasmalauncher = (max - floor(pl.ammo_cells/5));
         num = (max - pl.reload_plasmalauncher);
     } else
         return "";
