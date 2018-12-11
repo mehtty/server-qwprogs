@@ -20,7 +20,7 @@ void () button_fire;
 
 void (entity pl, float fr) TF_AddFrags;
 
-void () DropGoalItems;
+void (entity player) DropGoalItems;
 
 void () TeamFortress_DisplayLegalClasses;
 
@@ -144,6 +144,7 @@ void () W_Precache = {
     precache_sound("weapons/asscan4.wav");
     precache_sound("weapons/railgun.wav");
     precache_sound("weapons/dartgun.wav");
+    precache_model("progs/ball1.mdl");
 };
 
 float () crandom = {
@@ -1783,7 +1784,7 @@ float (float weap) CheckForAmmo = {
         if (self.reload_rocket_launcher >= 1 && self.ammo_rockets > self.reload_rocket_launcher)
             return 1;
     } else if (weap == WEAP_PLASMALAUNCHER) {
-        if (self.reload_plasmalauncher >= 1 && self.ammo_rockets > self.reload_plasmalauncher)
+        if (self.reload_plasmalauncher >= 1 && self.ammo_cells > self.reload_plasmalauncher * 5)
             return 1;
     }
     
@@ -2398,7 +2399,7 @@ void () ImpulseCommands = {
     else if (self.impulse == TF_SHOW_IDS)
         TeamFortress_ShowIDs();
     else if ((self.playerclass != 0) && (self.impulse == TF_DROPFLAG))
-        DropGoalItems();
+        DropGoalItems(self);
     else if (self.impulse == TF_DISCARD)
         TeamFortress_Discard();
     else if (self.impulse == TF_DASH)
