@@ -248,7 +248,11 @@ void (vector org) spawn_tfog = {
 };
 
 void () tdeath_touch = {
-    if (other == self.owner && self.classname != "teledeath3") {
+    if (self.classname == "teledeath3") {
+        if (other != self.owner) {
+            return;
+        }
+    } else if (other == self.owner) {
         return;
     }
 
@@ -277,11 +281,11 @@ void () tdeath_touch = {
     }
 };
 
-void (vector org, entity death_owner, float ignore_owner) spawn_tdeath = {
+void (vector org, entity death_owner, float kill_owner) spawn_tdeath = {
     local entity death;
 
     death = spawn();
-    if (ignore_owner == 1) {
+    if (kill_owner == 1) {
         death.classname = "teledeath3";
     } else {
         death.classname = "teledeath";
