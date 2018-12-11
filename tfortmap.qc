@@ -2753,7 +2753,7 @@ void (entity P) ForceRespawn = {
     self.fixangle = 1;
     CheckClientSpawn();
     if (self.playerclass != 0)
-        spawn_tdeath(self.origin, self);
+        spawn_tdeath(self.origin, self, 0);
     if ((spot.classname == "info_player_teamspawn") &&
             (cb_prematch_time < time)) {
         if (spot.items != 0) {
@@ -2793,38 +2793,38 @@ void (entity P) ForceRespawn = {
     self = oldself;
 };
 
-void () DropGoalItems = {
+void (entity player) DropGoalItems = {
     local entity te, search;
 
     newmis = spawn();
-    makevectors(self.v_angle);
+    makevectors(player.v_angle);
     v_forward = normalize(v_forward) * 64;
-    newmis.origin = self.origin + v_forward;
+    newmis.origin = player.origin + v_forward;
     te = find(world, classname, "item_tfgoal");
     while (te) {
-        if (te.owner == self) {
+        if (te.owner == player) {
             if (old_dropflag) {
                 if (te.goal_activation & 4096) {
-                    tfgoalitem_RemoveFromPlayer(te, self, 2);
+                    tfgoalitem_RemoveFromPlayer(te, player, 2);
                 }
             }
-            else if (self.effects & EF_DIMLIGHT) {
+            else if (player.effects & EF_DIMLIGHT) {
                 te.angles = '0 0 0';
-                tfgoalitem_RemoveEffectsFromPlayer(te, self);
-                tfgoalitem_drop(te, 1, self);
-                if (self.team_no == 1)
-                    bprint(PRINT_HIGH, self.netname, Q" \sdropped red's flag!\s\n");
-                else if (self.team_no == 2)
-                    bprint(PRINT_HIGH, self.netname, Q" \sdropped blue's flag!\s\n");
+                tfgoalitem_RemoveEffectsFromPlayer(te, player);
+                tfgoalitem_drop(te, 1, player);
+                if (player.team_no == 1)
+                    bprint(PRINT_HIGH, player.netname, Q" \sdropped red's flag!\s\n");
+                else if (player.team_no == 2)
+                    bprint(PRINT_HIGH, player.netname, Q" \sdropped blue's flag!\s\n");
                 else
-                    bprint(PRINT_HIGH, self.netname, Q" \sdropped the enemy's flag!\s\n");
+                    bprint(PRINT_HIGH, player.netname, Q" \sdropped the enemy's flag!\s\n");
 
-                Status_Print(self, "\n\n\n", "You dropped the flag!");
+                Status_Print(player, "\n\n\n", "You dropped the flag!");
                 search = find(world, classname, "player");
                 while (search) {
-                    if ((search.team_no == self.team_no) && (self.team_no != 0)) {
-                        if (search != self)
-                            Status_Print(search, "\n\n\n", self.netname, " dropped the enemy flag!");
+                    if ((search.team_no == player.team_no) && (player.team_no != 0)) {
+                        if (search != player)
+                            Status_Print(search, "\n\n\n", player.netname, " dropped the enemy flag!");
                     } else {
                         Status_Print(search, "\n\n\n", "The enemy dropped your flag!");
                     }
@@ -2835,5 +2835,5 @@ void () DropGoalItems = {
         te = find(te, classname, "item_tfgoal");
     }
     dremove(newmis);
-    TeamFortress_SetSpeed(self);
+    TeamFortress_SetSpeed(player);
 };

@@ -121,7 +121,22 @@ void (entity player, vector dest) PerformTele = {
     spawn_tfog(dest);
 
     setorigin(player, dest);
-    spawn_tdeath(dest, player);
+
+    // test if player is carrying flag
+    entity flag;
+    flag = find(world, classname, "item_tfgoal");
+    while (flag) {
+        if (flag.owner == player) {
+            // drop flag on teleport entry
+            DropGoalItems(player);
+
+            // kill player on teleport exit
+            spawn_tdeath(dest, player, 1);
+        }
+        flag = find(world, classname, "item_tfgoal");
+    }
+
+    spawn_tdeath(dest, player, 0);
 }
 
 vector (vector org, float positive, float units, string axis) TestTeleDir = {

@@ -248,13 +248,15 @@ void (vector org) spawn_tfog = {
 };
 
 void () tdeath_touch = {
-    if (other == self.owner)
+    if (other == self.owner && self.classname != "teledeath3") {
         return;
+    }
 
     if (other.classname == "player") {
-        if (other.invincible_finished > time)
+        if (other.invincible_finished > time) {
             self.classname = "teledeath2";
-
+        }
+            
         if (self.owner.classname != "player") {
             T_Damage(self.owner, self, self, 5000);
             return;
@@ -265,7 +267,6 @@ void () tdeath_touch = {
         || other.classname == "building_sentrygun") {
         T_Damage(other, self, self, 5000);
     }
-        
 
     if (other.think == TeamFortress_DetpackExplode) {
         other.solid = SOLID_NOT;
@@ -276,11 +277,15 @@ void () tdeath_touch = {
     }
 };
 
-void (vector org, entity death_owner) spawn_tdeath = {
+void (vector org, entity death_owner, float ignore_owner) spawn_tdeath = {
     local entity death;
 
     death = spawn();
-    death.classname = "teledeath";
+    if (ignore_owner == 1) {
+        death.classname = "teledeath3";
+    } else {
+        death.classname = "teledeath";
+    }
     death.movetype = MOVETYPE_NONE;
     death.solid = SOLID_TRIGGER;
     death.angles = '0 0 0';
@@ -332,7 +337,7 @@ void () teleport_touch = {
     org = t.origin + 32 * v_forward;
 
     spawn_tfog(org);
-    spawn_tdeath(t.origin, other);
+    spawn_tdeath(t.origin, other, 0);
 
     // move the player and lock him down for a little while
     if (!other.health) {

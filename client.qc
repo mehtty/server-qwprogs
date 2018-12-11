@@ -2,7 +2,7 @@ void (entity et, float f) player_pain;
 void () player_stand1;
 
 void (vector org) spawn_tfog;
-void (vector org, entity death_owner) spawn_tdeath;
+void (vector org, entity death_owner, float ignore_owner) spawn_tdeath;
 
 float modelindex_eyes;
 float modelindex_player;
@@ -1294,7 +1294,7 @@ void () PutClientInServer = {
     CheckClientSpawn();
 
     if (self.playerclass != 0)
-        spawn_tdeath(self.origin, self);
+        spawn_tdeath(self.origin, self, 0);
 
     if ((spot.classname == "info_player_teamspawn") &&
         (cb_prematch_time < time)) {
@@ -2169,6 +2169,9 @@ string (entity pe_target, entity pe_attacker, float pf_deathmsg) GetDeathMessage
             return strcat(pe_target.netname,
                     strcat(" was telefragged by ",
                     strcat(pe_attacker.owner.netname, "\n")));
+        }
+        if (pe_attacker.classname == "teledeath3") {
+            return strcat(pe_target.netname, " got telefragged by the enemy flag\n");
         }
         if (pf_deathmsg == 37) {
             return strcat(pe_attacker.netname, " shoots his teammate one too many times\n");
