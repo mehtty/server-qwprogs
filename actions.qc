@@ -23,11 +23,11 @@ void () TeamFortress_Discard = {
             newmis.ammo_cells = self.ammo_cells;
             newmis.ammo_nails = self.ammo_nails;
         break;
+        case PC_PLASMA:
         case PC_HVYWEAP:
             newmis.ammo_rockets = self.ammo_rockets;
             newmis.ammo_nails = self.ammo_nails;
         break;
-        case PC_PLASMA:
         case PC_PYRO:
             newmis.ammo_nails = self.ammo_nails;
     }
