@@ -30,8 +30,7 @@ void () TeamFortress_ShowTF;
 void () TeamFortress_AssaultWeapon;
 void () TeamFortress_IncendiaryCannon;
 void () TeamFortress_FlameThrower;
-void () TeamFortress_Plasma;
-void () TeamFortress_PlasmaRocket;
+void () TeamFortress_PlasmaLauncher;
 void (float inp) TeamFortress_PrimeGrenade;
 void () TeamFortress_ThrowGrenade;
 void (float inp) TeamFortress_PrimeThrowGrenade;
@@ -101,10 +100,8 @@ void () W_FireFlame;
 void () W_FireIncendiaryCannon;
 void () W_FireTranq;
 void () W_FireLaser;
-void () W_FirePlasma;
-void () W_FirePlasmaRocket;
-void () W_Reload_plasma;
-void () W_Reload_plasmaRocket;
+void () W_FirePlasmaLauncher;
+void () W_Reload_PlasmaLauncher;
 
 
 void () HallucinationTimer;
@@ -147,9 +144,6 @@ void () W_Precache = {
     precache_sound("weapons/asscan4.wav");
     precache_sound("weapons/railgun.wav");
     precache_sound("weapons/dartgun.wav");
-    precache_sound("weapons/plasma.wav");
-    precache_model("progs/plasma.mdl");
-    precache_model("progs/v_plasma.mdl");
 };
 
 float () crandom = {
@@ -1550,15 +1544,7 @@ void (entity pl) W_SetCurrentAmmo = {
         }
         pl.items = pl.items | IT_SHELLS;
         pl.weapon = IT_ROCKET_LAUNCHER;
-    } else if (pl.current_weapon == WEAP_PLASMA) {
-        pl.currentammo = pl.ammo_cells;
-        if (!(pl.tfstate & TFSTATE_RELOADING)) {
-            pl.weaponmodel = "progs/v_flame.mdl";
-            pl.weaponframe = 0;
-        }
-        pl.items = pl.items | IT_CELLS;
-        pl.weapon = IT_GRENADE_LAUNCHER;
-    } else if (pl.current_weapon == WEAP_PLASMAROCKET) {
+    } else if (pl.current_weapon == WEAP_PLASMALAUNCHER) {
         pl.currentammo = pl.ammo_rockets;
         if (!(pl.tfstate & TFSTATE_RELOADING)) {
             pl.weaponmodel = "progs/v_irock.mdl";
@@ -1590,14 +1576,6 @@ void (entity pl) W_SetCurrentAmmo = {
         }
         pl.items = pl.items | IT_NAILS;
         pl.weapon = IT_SHOTGUN;
-    } else if (pl.current_weapon == WEAP_PLASMA) {
-        pl.currentammo = pl.ammo_cells;
-        if (!(pl.tfstate & TFSTATE_RELOADING)) {
-            pl.weaponmodel = "progs/v_plasma.mdl";
-            pl.weaponframe = 0;
-        }
-        pl.items = pl.items | IT_CELLS;
-        pl.weapon = IT_EXTRA_WEAPON; //???
     } else {
         pl.currentammo = 0;
         pl.weaponmodel = "";
@@ -1779,13 +1757,8 @@ float () CheckForReload = {
             TeamFortress_ReloadCurrentWeapon();
             return 1;
         }
-    } else if (self.current_weapon == WEAP_PLASMA) {
-        if ((self.reload_plasma >= RE_PLASMA) && (self.ammo_cells > 0)) {
-            TeamFortress_ReloadCurrentWeapon();
-            return 1;
-        }
-    } else if (self.current_weapon == WEAP_PLASMAROCKET) {
-        if ((self.reload_plasma_rocket >= RE_PLASMAROCKET) && (self.ammo_rockets > 0)) {
+    } else if (self.current_weapon == WEAP_PLASMALAUNCHER) {
+        if ((self.reload_plasmalauncher >= RE_PLASMALAUNCHER) && (self.ammo_rockets > 0)) {
             TeamFortress_ReloadCurrentWeapon();
             return 1;
         }
@@ -1809,11 +1782,8 @@ float (float weap) CheckForAmmo = {
     } else if (weap == WEAP_ROCKET_LAUNCHER) {
         if (self.reload_rocket_launcher >= 1 && self.ammo_rockets > self.reload_rocket_launcher)
             return 1;
-    } else if (weap == WEAP_PLASMA) {
-        if (self.reload_plasma >= 1 && self.ammo_cells > self.reload_plasma)
-            return 1;
-    } else if (weap == WEAP_PLASMAROCKET) {
-        if (self.reload_plasma_rocket >= 1 && self.ammo_rockets > self.reload_plasma_rocket)
+    } else if (weap == WEAP_PLASMALAUNCHER) {
+        if (self.reload_plasmalauncher >= 1 && self.ammo_rockets > self.reload_plasmalauncher)
             return 1;
     }
     
@@ -1953,21 +1923,12 @@ void () W_Attack = {
             TeamFortress_SetSpeed(self);
             player_assaultcannonup1();
         }
-    } else if (self.current_weapon == WEAP_PLASMA) {
-        if (CheckForReload() == TRUE)
-            return;
-        player_shot1();
-        W_FirePlasma();
-        self.reload_plasma = self.reload_plasma + 1;
-        Status_Refresh(self);
-        CheckForReload();
-        Attack_Finished(0.1);        
-    } else if (self.current_weapon == WEAP_PLASMAROCKET) {
+    } else if (self.current_weapon == WEAP_PLASMALAUNCHER) {
         if (CheckForReload() == TRUE)
             return;
         player_rocket1();
-        W_FirePlasmaRocket();
-        self.reload_plasma_rocket = self.reload_plasma_rocket + 1;
+        W_FirePlasmaLauncher();
+        self.reload_plasmalauncher = self.reload_plasmalauncher + 1;
         Status_Refresh(self);
         CheckForReload();
         Attack_Finished(0.5);
@@ -2027,11 +1988,10 @@ float (float weap) W_GetSlot = {
                 || weap == WEAP_TRANQ
                 || weap == WEAP_LASER
                 || weap == WEAP_ASSAULT_CANNON
-                || weap == WEAP_PLASMA) {
+                || weap == WEAP_PLASMALAUNCHER) {
         return 1;
     } else if (weap == WEAP_SUPER_SHOTGUN
-                || weap == WEAP_AUTO_RIFLE
-                || weap == WEAP_PLASMAROCKET) {
+                || weap == WEAP_AUTO_RIFLE) {
         return 2;
     } else if (weap == WEAP_SHOTGUN) {
         if (self.playerclass == PC_SCOUT)
@@ -2136,7 +2096,7 @@ float () W_WeaponSlot1 = {
     else if (self.playerclass == PC_HVYWEAP)
         return WEAP_ASSAULT_CANNON;
     else if (self.playerclass == PC_PLASMA)
-        return WEAP_PLASMA;
+        return WEAP_PLASMALAUNCHER;
     else if (self.playerclass == PC_SPY)
         return WEAP_TRANQ;
     else if (self.playerclass == PC_ENGINEER)
@@ -2153,12 +2113,12 @@ float () W_WeaponSlot2 = {
                 || self.playerclass == PC_MEDIC
                 || self.playerclass == PC_HVYWEAP
                 || self.playerclass == PC_SPY
-                || self.playerclass == PC_ENGINEER)
+                || self.playerclass == PC_ENGINEER
+                || self.playerclass == PC_PLASMA)
         return WEAP_SUPER_SHOTGUN;
     else if (self.playerclass == PC_DEMOMAN) {
         return WEAP_GRENADE_LAUNCHER; // weaponmode = 1 (pipebomb launcher)
-    } else if (self.playerclass == PC_PLASMA)
-        return WEAP_PLASMAROCKET;
+    }
     return 0;
 };
 

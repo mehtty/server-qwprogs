@@ -1205,7 +1205,7 @@ void () PutClientInServer = {
     self.reload_super_shotgun = 0;
     self.reload_grenade_launcher = 0;
     self.reload_rocket_launcher = 0;
-    self.reload_plasma_rocket = 0;
+    self.reload_plasmalauncher = 0;
 
     self.immune_to_check = time + 10;
     self.fire_held_down = 0;
@@ -2513,8 +2513,8 @@ string (entity pe_target, entity pe_attacker, float pf_deathmsg) GetDeathMessage
                     s_deathstring = " didn't insert the correct change into ";
                     s_deathstring2 = "'s dispenser.\n";
                 } else if (pf_deathmsg == DMSG_PLASMA) {
-                    s_deathstring = " gets melted by ";
-                    s_deathstring2 = "'s plasma launcher.\n";
+                    s_deathstring = " face gets melted by ";
+                    s_deathstring2 = "'s hot, sticky plasma\n";
                 }
 
                 if (pe_attacker.has_disconnected == 1 || pe_attacker.netname == string_null) {

@@ -5,7 +5,7 @@
 
 void () TeleGrenadeTouch;
 
-void () plasmaRocket_touch = {
+void () PlasmaLauncher_touch = {
     if (self.voided)
         return;
     self.voided = 1;
@@ -38,8 +38,7 @@ void () plasmaRocket_touch = {
     dremove(self);
 };
 
-
-void () W_FirePlasmaRocket = {
+void () W_FirePlasmaLauncher = {
 
     if (self.ammo_rockets < 1) {
         W_ChangeToBestWeapon();
@@ -60,15 +59,15 @@ void () W_FirePlasmaRocket = {
     newmis.velocity = newmis.velocity * 1500;
     newmis.angles = vectoangles(newmis.velocity);
 
-    newmis.touch = plasmaRocket_touch;
+    newmis.touch = PlasmaLauncher_touch;
     newmis.voided = 0;
 
     newmis.nextthink = time + 2;
     newmis.think = SUB_Remove;
 
     newmis.weapon = DMSG_ROCKETL;
-    newmis.classname = "plasmarocket";
-    setmodel(newmis, "progs/plasma.mdl");
+    newmis.classname = "plasmaball";
+    setmodel(newmis, "progs/ball.mdl");
     setsize(newmis, '0 0 0', '0 0 0');
     setorigin(newmis, self.origin + v_forward * 8 + '0 0 16');
 
@@ -76,7 +75,7 @@ void () W_FirePlasmaRocket = {
 };
 
 
-void () W_Reload_plasmaRocket = {
+void () W_Reload_PlasmaLauncher = {
     self.owner.tfstate = self.owner.tfstate - (self.owner.tfstate & TFSTATE_RELOADING);
     self.owner.weaponmodel = "progs/v_irock.mdl";
     sprint(self.owner, PRINT_LOW, "Finished reloading\n");
@@ -85,15 +84,15 @@ void () W_Reload_plasmaRocket = {
     Status_Refresh(self.owner);
 };
 
-void () TeamFortress_PlasmaRocket = {
-    if (!(self.weapons_carried & WEAP_PLASMAROCKET)) {
+void () TeamFortress_PlasmaLauncher = {
+    if (!(self.weapons_carried & WEAP_PLASMALAUNCHER)) {
         return;
     }
-    if (self.ammo_rockets < 1) {
+    if (self.ammo_cells < 5) {
         sprint(self, PRINT_HIGH, "Not enough ammo\n");
         return;
     }
-    self.current_weapon = WEAP_PLASMAROCKET;
+    self.current_weapon = WEAP_PLASMALAUNCHER;
     W_SetCurrentAmmo(self);
 };
 

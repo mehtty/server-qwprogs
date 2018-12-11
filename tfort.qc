@@ -2084,7 +2084,7 @@ void () TeamFortress_SetEquipment = {
         else
             self.maxarmor = PC_PLASMA_MAXARMOR;
         if (self.last_playerclass != self.playerclass)
-            self.current_weapon = WEAP_PLASMAROCKET;
+            self.current_weapon = WEAP_PLASMALAUNCHER;
 
         self.items_allowed = PC_PLASMA_WEAPONS;
         self.items =
