@@ -2516,7 +2516,7 @@ string (entity pe_target, entity pe_attacker, float pf_deathmsg) GetDeathMessage
                     s_deathstring = " didn't insert the correct change into ";
                     s_deathstring2 = "'s dispenser.\n";
                 } else if (pf_deathmsg == DMSG_PLASMA) {
-                    s_deathstring = " face gets melted by ";
+                    s_deathstring = "'s face gets melted by ";
                     s_deathstring2 = "'s hot, sticky plasma\n";
                 }
 
