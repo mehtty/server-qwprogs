@@ -136,7 +136,7 @@ void (entity player, vector dest) PerformTele = {
             DropGoalItems(player);
 
             // kill player on teleport exit
-            spawn_tdeath(dest, player, 1);
+            //spawn_tdeath(dest, player, 1);
         }
         flag = find(flag, classname, "item_tfgoal");
     }
