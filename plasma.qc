@@ -72,7 +72,7 @@ void () W_FirePlasmaLauncher = {
     newmis.nextthink = time + 2;
     newmis.think = SUB_Remove;
 
-    newmis.weapon = DMSG_ROCKETL;
+    newmis.weapon = DMSG_PLASMA;
     newmis.classname = "plasmaball";
     setmodel(newmis, "progs/ball1.mdl");
     setsize(newmis, '0 0 0', '0 0 0');
