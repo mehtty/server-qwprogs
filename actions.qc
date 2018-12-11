@@ -518,21 +518,21 @@ void (float weap) TeamFortress_ReloadWeapon = {
             sprint(self, PRINT_HIGH, "Not enough ammo to reload\n");
         }
     } else if (weap == WEAP_PLASMALAUNCHER) {
-        if (self.ammo_cells == 0) {
-            sprint(self, PRINT_HIGH, "Out of cells\n");
+        if (self.ammo_cells < 5) {
+            sprint(self, PRINT_HIGH, "Not enough cells\n");
             return;
         }
         if (self.reload_plasmalauncher == 0) {
             sprint(self, PRINT_HIGH, "Clip full\n");
             return;
         }
-        if ((RE_PLASMALAUNCHER - self.reload_plasmalauncher) >= floor(self.ammo_cells/5) {
+        if ((RE_PLASMALAUNCHER - self.reload_plasmalauncher) >= floor(self.ammo_cells/5)) {
             sprint(self, PRINT_HIGH, "All cells are in the clip\n");
             return;
         }
         if (self.ammo_cells >= 5) {
             self.current_weapon = weap;
-            if (self.reload_plasmalauncher >= self.ammo_cells)
+            if (self.reload_plasmalauncher >= floor(self.ammo_cells / 5))
                 reloadamount = floor(self.ammo_cells / 5);
             else
                 reloadamount = self.reload_plasmalauncher;
@@ -541,7 +541,7 @@ void (float weap) TeamFortress_ReloadWeapon = {
             reloadtime = (RE_PLASMALAUNCHER - reloadamount) / RE_PLASMALAUNCHER;
             reloadtime = RE_PLASMALAUNCHER_TIME - (RE_PLASMALAUNCHER_TIME * reloadtime);
             self.reload_plasmalauncher = 0;
-            if (reloadamount < RE_PLASMALAUNCHER) {
+            if (self.ammo_cells*5 < RE_PLASMALAUNCHER) {
                 self.reload_plasmalauncher = RE_PLASMALAUNCHER - reloadamount;
             }
             sprint(self, PRINT_HIGH, "Reloading Plasma Launcher...\n");
