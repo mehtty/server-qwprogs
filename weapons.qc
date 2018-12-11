@@ -1609,6 +1609,8 @@ float () W_BestWeapon = {
         return WEAP_ASSAULT_CANNON;
     else if (self.ammo_cells >= 1 && it & WEAP_FLAMETHROWER)
         return WEAP_FLAMETHROWER;
+    else if (self.ammo_cells >= 5 && it & WEAP_PLASMALAUNCHER)
+        return WEAP_FLAMETHROWER;
     else if (self.ammo_nails >= 2 && it & WEAP_SUPER_NAILGUN)
         return WEAP_SUPER_NAILGUN;
     else if (self.ammo_shells >= 2 && it & WEAP_SUPER_SHOTGUN)
