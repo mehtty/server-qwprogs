@@ -18,7 +18,7 @@ void () PlasmaLauncher_touch = {
         return;
     }
     float damg;
-    damg = 40;
+    damg = 100;
     deathmsg = self.weapon;
 
     if (other.health) {
@@ -127,12 +127,10 @@ void (entity player, vector dest) PerformTele = {
     // spawn a tfog flash at the destination
     spawn_tfog(dest);
 
-    setorigin(player, dest);
-
     // test if player is carrying flag
     entity flag;
     flag = find(world, classname, "item_tfgoal");
-    while (flag) {
+    while (flag != world) {
         if (flag.owner == player) {
             // drop flag on teleport entry
             DropGoalItems(player);
@@ -140,9 +138,10 @@ void (entity player, vector dest) PerformTele = {
             // kill player on teleport exit
             spawn_tdeath(dest, player, 1);
         }
-        flag = find(world, classname, "item_tfgoal");
+        flag = find(flag, classname, "item_tfgoal");
     }
 
+    setorigin(player, dest);
     spawn_tdeath(dest, player, 0);
 }
 
