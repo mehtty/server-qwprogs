@@ -51,12 +51,19 @@ void () W_FirePlasmaLauncher = {
 
     newmis = spawn();
     newmis.owner = self;
-    newmis.movetype = MOVETYPE_FLYMISSILE;
+    newmis.movetype = MOVETYPE_BOUNCE;
     newmis.solid = SOLID_BBOX;
 
     makevectors(self.v_angle);
-    newmis.velocity = v_forward;
-    newmis.velocity = newmis.velocity * 1500;
+    if (self.v_angle_x) {
+        newmis.velocity =
+            (((v_forward * 600) + (v_up * 200)) +
+             ((crandom() * v_right) * 10)) + ((crandom() * v_up) * 10);
+    } else {
+        newmis.velocity = aim(self, 10000);
+        newmis.velocity = newmis.velocity * 600;
+        newmis.velocity_z = 200;
+    }
     newmis.angles = vectoangles(newmis.velocity);
 
     newmis.touch = PlasmaLauncher_touch;
@@ -67,11 +74,11 @@ void () W_FirePlasmaLauncher = {
 
     newmis.weapon = DMSG_ROCKETL;
     newmis.classname = "plasmaball";
-    setmodel(newmis, "progs/ball.mdl");
+    setmodel(newmis, "progs/ball1.mdl");
     setsize(newmis, '0 0 0', '0 0 0');
     setorigin(newmis, self.origin + v_forward * 8 + '0 0 16');
 
-    KickPlayer(-3, self);
+    KickPlayer(-3, self);  
 };
 
 
