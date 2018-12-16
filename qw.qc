@@ -510,7 +510,10 @@ float intermission_exittime;
 // add clientkill ent defs
 .float clientkillforce;
 .float clientkillfree;
+
+// plasma class
 .float lifenum;
+
 
 //============================================================================
 

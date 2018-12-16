@@ -60,6 +60,7 @@ void () TeamFortress_EngineerBuild;
 void () TeamFortress_EngineerBuildStop;
 void () TeamFortress_Scan;
 void () TeamFortress_Discard;
+void () TeamFortress_Discard_DropAmmo;
 void (float force) TeamFortress_DetonatePipebombs;
 void (float timer) TeamFortress_SetDetpack;
 void () TeamFortress_DetpackStop;
@@ -2403,6 +2404,8 @@ void () ImpulseCommands = {
         DropGoalItems(self);
     else if (self.impulse == TF_DISCARD)
         TeamFortress_Discard();
+    else if (self.impulse == TF_DISCARD_DROP_AMMO)
+        TeamFortress_Discard_DropAmmo();
     else if (self.impulse == TF_DASH)
         CF_Scout_Dash();
     else if (self.impulse == TF_PB_DETONATE)
@@ -2763,8 +2766,9 @@ void () W_WeaponFrame = {
         }
     }
 
-    // class specials and grenade impulses always possible
-    if (self.impulse == TF_SPECIAL_SKILL ||(self.impulse >= TF_GRENADE_1 && self.impulse <= TF_GRENADE_SWITCH)) {
+    // class specials and grenade impulses always possible, also detpipe
+    if (self.impulse == TF_SPECIAL_SKILL ||(self.impulse >= TF_GRENADE_1 && self.impulse <= TF_GRENADE_SWITCH)
+            || self.impulse == TF_PB_DETONATE) {
         ImpulseCommands();
         return;
     }
