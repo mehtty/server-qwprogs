@@ -78,6 +78,7 @@ void () TeamFortress_MOTD = {
         TeamFortress_Alias("medic", TF_CHANGEPC_MEDIC, 0);
         TeamFortress_Alias("hwguy", TF_CHANGEPC_HVYWEAP, 0);
         TeamFortress_Alias("pyro", TF_CHANGEPC_PYRO, 0);
+        TeamFortress_Alias("plasma", TF_CHANGEPC_PLASMA, 0);
         TeamFortress_Alias("spy", TF_CHANGEPC_SPY, 0);
         TeamFortress_Alias("engineer", TF_CHANGEPC_ENGINEER, 0);
         TeamFortress_Alias("randompc", TF_CHANGEPC_RANDOM, 0);
@@ -166,6 +167,7 @@ void () TeamFortress_MOTD = {
         TeamFortress_Alias("dmedic", TF_DISGUISE_MEDIC, 0);
         TeamFortress_Alias("dhwguy", TF_DISGUISE_HWGUY, 0);
         TeamFortress_Alias("dpyro", TF_DISGUISE_PYRO, 0);
+        TeamFortress_Alias("dplasma", TF_DISGUISE_PLASMA, 0);
     } else if (self.motd == 120) {
         TeamFortress_Alias("dengineer", TF_DISGUISE_ENGINEER, 0);
         TeamFortress_Alias("dblue", TF_DISGUISE_BLUE, 0);

@@ -896,12 +896,9 @@ void () GibPlayer = {
         self.deadflag = 2;
     }
     TeamFortress_SetupRespawn(0);
-    if (damage_attacker.classname == "teledeath") {
-        sound(self, 2, "player/teledth1.wav", 1, 0);
-        self.respawn_time = (self.respawn_time + 2) + (random() * 2);
-        return;
-    }
-    if (damage_attacker.classname == "teledeath2") {
+    if (damage_attacker.classname == "teledeath"
+        || damage_attacker.classname == "teledeath2"
+        || damage_attacker.classname == "teledeath3") {
         sound(self, 2, "player/teledth1.wav", 1, 0);
         self.respawn_time = (self.respawn_time + 2) + (random() * 2);
         return;

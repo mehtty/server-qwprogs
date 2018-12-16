@@ -348,7 +348,7 @@ string (float class) CF_GetRandomClassTip {
                     line2 = "clear a room or block a bottleneck.";
                 }
             }
-        } else if (class == PC_PYRO) {
+        } else if (class == PC_PYRO && !plasmaclass) {
             while (strlen(line1) == 0) {
                 if (!self.display_tip)
                     self.display_tip = ceil(random() * 6);
@@ -806,6 +806,10 @@ string(entity pl) ClipSizeToString =
         if ((max - pl.reload_rocket_launcher) > pl.ammo_rockets)
             pl.reload_rocket_launcher = (max - pl.ammo_rockets);
         num = (max - pl.reload_rocket_launcher);
+    } else if (pl.current_weapon == WEAP_PLASMALAUNCHER) {
+        if ((max - pl.reload_plasmalauncher) > floor(pl.ammo_cells/5))
+            pl.reload_plasmalauncher = (max - floor(pl.ammo_cells/5));
+        num = (max - pl.reload_plasmalauncher);
     } else
         return "";
 
@@ -822,18 +826,22 @@ string(entity pl) ClipSizeToString =
 
 float(entity pl) GetClipSize =
 {
-    if (pl.current_weapon == WEAP_SHOTGUN)
-        return 8;
-    else if (pl.current_weapon == WEAP_SUPER_SHOTGUN)
-        return 16;
-    else if (pl.current_weapon == WEAP_SNIPER_RIFLE)
-        return 1;
-    else if (pl.current_weapon == WEAP_GRENADE_LAUNCHER)
-        return 6;
-    else if (pl.current_weapon == WEAP_ROCKET_LAUNCHER)
-        return 4;
-    else
-        return 0;
+    switch (pl.current_weapon) {
+        case WEAP_SHOTGUN:
+            return RE_SHOTGUN;
+        case WEAP_SUPER_SHOTGUN:
+            return RE_SUPER_SHOTGUN;
+        case WEAP_SNIPER_RIFLE:
+            return RE_SNIPER_RIFLE;
+        case WEAP_GRENADE_LAUNCHER:
+            return RE_GRENADE_LAUNCHER;
+        case WEAP_ROCKET_LAUNCHER:
+            return RE_ROCKET_LAUNCHER;
+        case WEAP_PLASMALAUNCHER:
+            return RE_PLASMALAUNCHER;
+        default:
+            return 0;
+    }
 };
 
 string(float num) TeamToString =
@@ -853,7 +861,8 @@ string(float num) ClassToString =
     if (num == 4) return "Demoman";
     if (num == 5) return "Medic";
     if (num == 6) return "HWGuy";
-    if (num == 7) return "Pyro";
+    if (num == 7 && !plasmaclass) return "Pyro";
+    if (num == 7 && plasmaclass) return "Plasma";
     if (num == 8) return "Spy";
     if (num == 9) return "Engineer";
     if (num == 11) return "Civilian";

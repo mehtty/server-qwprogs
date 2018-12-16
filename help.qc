@@ -32,7 +32,7 @@ void () Help_Show = {
         Help_ShowMedic();
     if (self.playerclass == PC_HVYWEAP)
         Help_ShowHWGuy();
-    if (self.playerclass == PC_PYRO)
+    if (self.playerclass == PC_PYRO && !plasmaclass)
         Help_ShowPyro();
     if (self.playerclass == PC_SPY)
         Help_ShowSpy();

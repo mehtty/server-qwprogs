@@ -310,6 +310,7 @@
 #define PC_PYRO			7
 #define PC_SPY			8
 #define PC_ENGINEER		9
+#define PC_PLASMA		7
 
 // Insert new class definitions here
 
@@ -393,7 +394,7 @@
 #define TF_DISGUISE_DEMOMAN     68  // Spy: Disguise as Demoman
 #define TF_DISGUISE_MEDIC       69  // Spy: Disguise as Medic
 #define TF_DISGUISE_HWGUY       70  // Spy: Disguise as HWGuy
-#define TF_DISGUISE_PYRO        71  // Spy: Disguise as Pyro
+#define TF_DISGUISE_PYRO	    71  // Spy: Disguise as Pyro
 #define TF_DISGUISE_ENGINEER    72  // Spy: Disguise as Engineer
 #define TF_DISGUISE_BLUE        73  // Spy: Disguise as blue team
 #define TF_DISGUISE_RED         74  // Spy: Disguise as red team
@@ -403,7 +404,7 @@
 #define TF_ENGINEER_DETDISP     78  // Engineer: Detonate dispenser for Engineer
 #define TF_ENGINEER_DETSENTRY   79  // Engineer: Detonate sentry gun for Engineer
 #define TF_DISCARD_DROP_AMMO    80
-// unused                       81
+#define TF_DISGUISE_PLASMA      81  // Spy: Disguise as Plasma
 // unused                       82
 // unused                       83
 // unused                       84
@@ -450,7 +451,7 @@
 #define TF_TEAM_SCORES          125 // Display team scores
 #define TF_STATUS_QUERY         126 // Displays current team balance and equilization ratios
 #define TF_NEXTTIP              127 // Shows the next general/class tip
-// unused                       128
+#define TF_CHANGEPC_PLASMA      117 // Change class to Plasma
 // unused                       129
 #define TF_TOGGLEVOTE           130 // Toggle vote menu on/off
 #define TF_VOTENEXT             131 // Vote to start voting for next map
@@ -670,7 +671,9 @@
 #define WEAP_DETPACK			131072
 #define WEAP_TRANQ			262144
 #define WEAP_LASER			524288
-// still room for 12 more weapons
+#define WEAP_PLASMALAUNCHER			1048576
+
+// still room for 10 more weapons
 // but we can remove some by giving the weapons
 // a weapon mode (like the rifle)
 
@@ -682,12 +685,15 @@
 #define RE_SUPER_SHOTGUN	16 // 8 shots
 #define RE_GRENADE_LAUNCHER	6
 #define RE_ROCKET_LAUNCHER	4
+#define RE_PLASMALAUNCHER		6
+#define RE_SNIPER_RIFLE		1
 
 // reload times
 #define RE_SHOTGUN_TIME			2
 #define RE_SUPER_SHOTGUN_TIME		3
 #define RE_GRENADE_LAUNCHER_TIME	4
 #define RE_ROCKET_LAUNCHER_TIME		5
+#define RE_PLASMALAUNCHER_TIME				5
 
 // Maximum velocity you can move and fire the Sniper Rifle
 #define WEAP_SNIPER_RIFLE_MAX_MOVE	50
@@ -721,6 +727,8 @@
 #define GR_TYPE_EMP		8
 #define GR_TYPE_FLASH		9
 #define GR_TYPE_CALTROP		10
+#define GR_TYPE_TELE		11
+
 
 // Defines for WeaponMode
 #define GL_NORMAL	0
@@ -944,7 +952,6 @@
 #define PC_HVYWEAP_GRENADE_INIT_2	1
 #define PC_HVYWEAP_TF_ITEMS		0
 
-
 // Class Details for PYRO
 #define PC_PYRO_SKIN			21
 #define PC_PYRO_MAXHEALTH		100
@@ -970,6 +977,32 @@
 #define PC_PYRO_GRENADE_INIT_1		1
 #define PC_PYRO_GRENADE_INIT_2		4
 #define PC_PYRO_TF_ITEMS		0
+
+// Class Details for PLASMA
+#define PC_PLASMA_SKIN			21
+#define PC_PLASMA_MAXHEALTH		100
+#define PC_PLASMA_MAXSPEED		300
+#define PC_PLASMA_MAXSTRAFESPEED		300
+#define PC_PLASMA_MAXARMOR		150
+#define PC_PLASMA_INITARMOR		75
+#define PC_PLASMA_MAXARMORTYPE		0.6
+#define PC_PLASMA_INITARMORTYPE		0.6
+#define PC_PLASMA_ARMORCLASSES		31	// ALL
+#define PC_PLASMA_INITARMORCLASS		0	
+#define PC_PLASMA_WEAPONS			WEAP_PLASMALAUNCHER | WEAP_AXE | WEAP_SHOTGUN | WEAP_SUPER_SHOTGUN
+#define PC_PLASMA_MAXAMMO_SHOT		40
+#define PC_PLASMA_MAXAMMO_NAIL		50
+#define PC_PLASMA_MAXAMMO_CELL		200
+#define PC_PLASMA_MAXAMMO_ROCKET		60
+#define PC_PLASMA_INITAMMO_SHOT		20
+#define PC_PLASMA_INITAMMO_NAIL		0
+#define PC_PLASMA_INITAMMO_CELL		120
+#define PC_PLASMA_INITAMMO_ROCKET		15
+#define PC_PLASMA_GRENADE_TYPE_1		GR_TYPE_NORMAL
+#define PC_PLASMA_GRENADE_TYPE_2		GR_TYPE_TELE
+#define PC_PLASMA_GRENADE_INIT_1		4
+#define PC_PLASMA_GRENADE_INIT_2		2
+#define PC_PLASMA_TF_ITEMS		0
 
 // Class Details for SPY
 #define PC_SPY_SKIN			22
@@ -1124,6 +1157,7 @@
 #define TF_ILL_RANDOMPC		128
 #define TF_ILL_SPY		256
 #define TF_ILL_ENGINEER		512
+#define TF_ILL_PLASMA		1024
 
 /*======================================================================*/
 /* Flamethrower								*/
@@ -1187,6 +1221,14 @@
 #define DMSG_SENTRYGUN_ROCKET		34
 #define DMSG_GREN_FLASH			35
 #define DMSG_TRIGGER			36
+                            //  37  "team kill"
+                            //  38  sentry gun
+                            //  39  dispenser
+                            //  40  air pipebombs
+                            //  41  caltrops
+#define DMSG_PLASMA				42
+#define DMSG_GREN_TELE			43 // should never happen...
+
 
 /*======================================================*/
 /* Menus						*/
