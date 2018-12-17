@@ -711,6 +711,8 @@ void (float inp) TeamFortress_PrimeGrenade = {
     local string ptime;
     local entity tGrenade;
     local entity timer;
+    float grenslot;
+    grenslot = 0;
     gtype = 0;
 
     if ((self.tfstate & TFSTATE_GRENPRIMED) ||
@@ -720,134 +722,113 @@ void (float inp) TeamFortress_PrimeGrenade = {
     if (    (inp == 1 && self.tp_grenade_switch != 1)
          || (inp == 2 && self.tp_grenade_switch == 1)) {
         gtype = self.tp_grenades_1;
-
-        if (self.tp_grenades_1 == 2)
-            gs = "Concussion grenade";
-        else if (self.tp_grenades_1 == 3)
-            gs = "Nail grenade";
-        else if (self.tp_grenades_1 == 4)
-            gs = "Mirv grenade";
-        else if (self.tp_grenades_1 == 5)
-            gs = "Napalm grenade";
-        else if (self.tp_grenades_1 == 6)
-            gs = "Flare";
-        else if (self.tp_grenades_1 == 7)
-            gs = "Gas grenade";
-        else if (self.tp_grenades_1 == 8)
-            gs = "EMP grenade";
-        else if (self.tp_grenades_1 == 9)
-            gs = "Flash grenade";
-        else if (self.tp_grenades_1 == 10)
-            gs = "Caltrop canister";
-        else if (self.tp_grenades_1 == 11)
-            gs = "Tele grenade";
-        else
-            gs = "Grenade";
-
-        if (self.no_grenades_1 > 0) {
-            self.has_throwngren = TRUE;
-            self.no_grenades_1 = self.no_grenades_1 - 1;
-            if (gtype == 6) {
-                newmis = spawn();
-                newmis.owner = self;
-                newmis.movetype = 6;
-                newmis.solid = 2;
-                newmis.classname = "grenade";
-                makevectors(self.v_angle);
-                newmis.velocity = (v_forward * 600) + (v_up * 25);
-                newmis.velocity = newmis.velocity * 700;
-                newmis.angles = vectoangles(newmis.velocity);
-                newmis.weapon = self.team_no;
-                newmis.think = FlareGrenadeExplode;
-                newmis.nextthink = time + 0.8;
-                newmis.touch = FlareGrenadeTouch;
-                newmis.skin = 1;
-                newmis.mdl = "flare";
-                setmodel(newmis, "progs/flare.mdl");
-                setsize(newmis, '0 0 0', '0 0 0');
-                setorigin(newmis, self.origin);
-                return;
-            }
-            if (gtype == GR_TYPE_CALTROP) {
-                ptime = ftos(0.5);
-                sprint(self, PRINT_HIGH, "Opening ", gs, "...\n");
-            } else {
-                ptime = ftos(3);
-                sprint(self, PRINT_HIGH, gs, " primed, ", ptime,
-                       " seconds...\n");
-            }
-        } else {
-            sprint(self, PRINT_HIGH, "No ", gs, "s left\n");
-            return;
-        }
-    }
-    if (    (inp == 2 && self.tp_grenade_switch != 1)
+        grenslot = 1;
+    } else if (    (inp == 2 && self.tp_grenade_switch != 1)
          || (inp == 1 && self.tp_grenade_switch == 1)) {
         gtype = self.tp_grenades_2;
+        grenslot = 2;
+    }
 
-        if (self.tp_grenades_2 == 2)
+    switch (gtype) {
+        case GR_TYPE_CONCUSSION:
             gs = "Concussion grenade";
-        else if (self.tp_grenades_2 == 3)
+            break;
+        case GR_TYPE_NAIL:
             gs = "Nail grenade";
-        else if (self.tp_grenades_2 == 4)
+            break;
+        case GR_TYPE_MIRV:
             gs = "Mirv grenade";
-        else if (self.tp_grenades_2 == 5)
+            break;
+        case GR_TYPE_NAPALM:
             gs = "Napalm grenade";
-        else if (self.tp_grenades_2 == 6)
+            break;
+        case GR_TYPE_FLARE:
             gs = "Flare";
-        else if (self.tp_grenades_2 == 7)
+            break;
+        case GR_TYPE_GAS:
             gs = "Gas grenade";
-        else if (self.tp_grenades_2 == 8)
+            break;
+        case GR_TYPE_EMP:
             gs = "EMP grenade";
-        else if (self.tp_grenades_2 == 9)
+            break;
+        case GR_TYPE_FLASH:
             gs = "Flash grenade";
-        else if (self.tp_grenades_2 == 11)
+            break;
+        case GR_TYPE_CALTROP:
+            gs = "Caltrop canister";
+            break;
+        case GR_TYPE_TELE:
             gs = "Tele grenade";
-        else
+            break;
+        default:
             gs = "Grenade";
+    }
 
-        if (self.no_grenades_2 > 0) {
-            self.has_throwngren = TRUE;
-            self.no_grenades_2 = self.no_grenades_2 - 1;
-            if (gtype == 6) {
-                newmis = spawn();
-                newmis.owner = self;
-                newmis.movetype = 6;
-                newmis.solid = 2;
-                newmis.classname = "grenade";
-                makevectors(self.v_angle);
-                if (self.v_angle_x) {
-                    newmis.velocity = v_forward * 1200 + v_up * 200;
-                } else {
-                    newmis.velocity = aim(self, 10000);
-                    newmis.velocity = newmis.velocity * 1200;
-                    newmis.velocity_z = 75;
-                }
-                newmis.angles = vectoangles(newmis.velocity);
-                newmis.weapon = self.team_no;
-                newmis.think = FlareGrenadeExplode;
-                newmis.nextthink = time + 0.8;
-                newmis.touch = FlareGrenadeTouch;
-                newmis.skin = 1;
-                newmis.mdl = "flare";
-                setmodel(newmis, "progs/flare.mdl");
-                setsize(newmis, '0 0 0', '0 0 0');
-                setorigin(newmis, self.origin);
+    switch (grenslot) {
+        case 1:
+            if (self.no_grenades_1 > 0) {
+                self.has_throwngren = TRUE;
+                self.no_grenades_1 = self.no_grenades_1 - 1;
+            } else {
+                sprint(self, PRINT_HIGH, "No ", gs, "s left\n");
                 return;
             }
-            if (gtype == GR_TYPE_CALTROP) {
-                ptime = ftos(0.5);
-                sprint(self, PRINT_HIGH, "Opening ", gs, "...\n");
+            break;
+        case 2:
+            if (self.no_grenades_2 > 0) {
+                self.has_throwngren = TRUE;
+                self.no_grenades_2 = self.no_grenades_2 - 1;
             } else {
-                ptime = ftos(3);
-                sprint(self, PRINT_HIGH, gs, " primed, ", ptime,
-                       " seconds...\n");
+                sprint(self, PRINT_HIGH, "No ", gs, "s left\n");
+                return;
             }
-        } else {
-            sprint(self, PRINT_HIGH, "No ", gs, "s left\n");
+            break;
+        default:
             return;
-        }
     }
+
+    if (gtype == GR_TYPE_FLARE || gtype == GR_TYPE_TELE) {
+        newmis = spawn();
+        newmis.owner = self;
+        newmis.movetype = 6;
+        newmis.solid = 2;
+        newmis.classname = "grenade";
+        makevectors(self.v_angle);
+        newmis.velocity = (v_forward * 600) + (v_up * 25);
+        newmis.velocity = newmis.velocity * 700;
+        newmis.angles = vectoangles(newmis.velocity);
+        newmis.weapon = self.team_no;
+
+        if (gtype == GR_TYPE_FLARE) {
+            newmis.think = FlareGrenadeExplode;
+            newmis.nextthink = time + 0.8;
+            newmis.touch = FlareGrenadeTouch;
+            newmis.skin = 1;
+            newmis.mdl = "flare";
+            setmodel(newmis, "progs/flare.mdl");
+        } else if (gtype == GR_TYPE_TELE) {
+            newmis.think = TeleGrenadeExplode;
+            //newmis.nextthink = time + 3;
+            newmis.touch = TeleGrenadeTouch;
+            newmis.skin = 2;
+            setmodel(newmis, "progs/biggren.mdl");
+            newmis.lifenum = newmis.owner.lifenum;
+            //newmis.avelocity = '0 300 0';
+        }
+        
+        setsize(newmis, '0 0 0', '0 0 0');
+        setorigin(newmis, self.origin);
+        return;
+    }
+    if (gtype == GR_TYPE_CALTROP) {
+        ptime = ftos(0.5);
+        sprint(self, PRINT_HIGH, "Opening ", gs, "...\n");
+    } else {
+        ptime = ftos(3);
+        sprint(self, PRINT_HIGH, gs, " primed, ", ptime,
+                " seconds...\n");
+    }
+
     self.tfstate = self.tfstate | 1;
     tGrenade = spawn();
     tGrenade.owner = self;
@@ -2925,6 +2906,7 @@ void () TeamFortress_ExplodePerson = {
     } else if (self.weapon == GR_TYPE_TELE) {
         newmis.touch = TeleGrenadeTouch;
         newmis.think = TeleGrenadeExplode;
+        newmis.lifenum = newmis.owner.lifenum;
         newmis.skin = 2;
         newmis.avelocity = '0 300 0';
         setmodel(newmis, "progs/biggren.mdl");

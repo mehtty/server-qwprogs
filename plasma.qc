@@ -105,8 +105,20 @@ void () TeamFortress_PlasmaLauncher = {
 
 void () TeleGrenadeTouch = {
     sound(self, CHAN_WEAPON, "weapons/bounce.wav", 1, ATTN_NORM);
-    if (self.velocity == '0 0 0')
+    if (pointcontents(self.origin) == CONTENT_SKY) {
+        dremove(self);
+        return;
+    }
+    if (other == world) {
+        self.movetype = MOVETYPE_NONE;
+        self.velocity = '0 0 0';
+    }
+    if (self.velocity == '0 0 0') {
         self.avelocity = '0 0 0';
+        self.touch = SUB_Null;
+    }
+
+    self.nextthink = time + 3;
 };
 
 float (vector org) TestTeleLoc = {
@@ -189,8 +201,8 @@ vector (vector org, float positive, float units, string axis) TestTeleDir = {
 void () TeleGrenadeExplode = {
     if (self.lifenum == self.owner.lifenum) {
         vector org, modorg;
-        float theight = 25;
-        float twide = 20;
+        float theight = 60;
+        float twide = 40;
         float test;
 
         org = self.origin;
