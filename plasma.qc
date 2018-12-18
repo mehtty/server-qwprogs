@@ -112,7 +112,6 @@ void () TeleGrenadeTouch = {
     if (other == world) {
         self.movetype = MOVETYPE_NONE;
         self.velocity = '0 0 0';
-        self.nextthink = time + 3;
     }
     if (self.velocity == '0 0 0') {
         self.avelocity = '0 0 0';
@@ -197,11 +196,12 @@ vector (vector org, float positive, float units, string axis) TestTeleDir = {
     return org;
 }
 
+
 void () TeleGrenadeExplode = {
     if (self.lifenum == self.owner.lifenum) {
         vector org, modorg;
-        float theight = 60;
-        float twide = 40;
+        float theight = 25;
+        float twide = 20;
         float test;
 
         org = self.origin;
@@ -254,3 +254,17 @@ void () TeleGrenadeExplode = {
     multicast(self.origin, MULTICAST_PHS);
     dremove(self);
 };
+
+void (entity player) UseTeleSkill = {
+    entity gren;
+    gren = find(world, classname, "grenade");
+    while (gren != world) {
+        if (gren.owner == player 
+            && gren.lifenum == player.lifenum 
+            && gren.tp_grenades_2 == GR_TYPE_TELE) {
+            gren.nextthink = time;
+            return;
+        }
+        gren = find(gren, classname, "grenade");
+    }
+}

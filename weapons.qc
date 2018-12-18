@@ -2313,6 +2313,7 @@ void () CycleWeaponPrev = {
 
 void () PreMatchImpulses;
 void () DeadImpulses;
+void (entity player) UseTeleSkill;
 
 void () ImpulseCommands = {
     if ((self.last_impulse == TF_DETPACK) && self.impulse)
@@ -2326,6 +2327,13 @@ void () ImpulseCommands = {
     }
     if (self.impulse == TF_SPECIAL_SKILL)
         UseSpecialSkill();
+
+    switch (self.impulse) {
+        case TF_PLASMA_USETELE:
+            UseTeleSkill(self);
+        break;
+        default:
+    }
 
     if (self.impulse == TF_NEXTTIP) {
         self.display_tip = 0;
@@ -2768,7 +2776,7 @@ void () W_WeaponFrame = {
 
     // class specials and grenade impulses always possible, also detpipe
     if (self.impulse == TF_SPECIAL_SKILL ||(self.impulse >= TF_GRENADE_1 && self.impulse <= TF_GRENADE_SWITCH)
-            || self.impulse == TF_PB_DETONATE) {
+            || self.impulse == TF_PB_DETONATE || self.impulse == TF_PLASMA_USETELE) {
         ImpulseCommands();
         return;
     }

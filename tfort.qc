@@ -59,6 +59,8 @@ void () UseSpecialSkill = {
         Status_Refresh(self);
         self.impulse = 0;
         return;
+    } else if (self.playerclass == PC_PLASMA && plasmaclass) {
+        self.impulse = TF_PLASMA_USETELE;
     } else if (self.playerclass == PC_SPY)
         self.impulse = TF_SPY_DIE;
     else if (self.playerclass == PC_ENGINEER)
@@ -786,6 +788,16 @@ void (float inp) TeamFortress_PrimeGrenade = {
         default:
             return;
     }
+    local float notimers = stof(infokey(self, "nt"));
+
+    if (gtype == GR_TYPE_CALTROP) {
+        ptime = ftos(0.5);
+        sprint(self, PRINT_HIGH, "Opening ", gs, "...\n");
+    } else if (gtype != GR_TYPE_FLARE) {
+        ptime = ftos(3);
+        sprint(self, PRINT_HIGH, gs, " primed, ", ptime,
+                " seconds...\n");
+    }
 
     if (gtype == GR_TYPE_FLARE || gtype == GR_TYPE_TELE) {
         newmis = spawn();
@@ -814,25 +826,30 @@ void (float inp) TeamFortress_PrimeGrenade = {
             setmodel(newmis, "progs/flare.mdl");
         } else if (gtype == GR_TYPE_TELE) {
             newmis.think = TeleGrenadeExplode;
-            //newmis.nextthink = time + 3;
+            newmis.nextthink = time + 3 + 0.8;
             newmis.touch = TeleGrenadeTouch;
             newmis.skin = 2;
             setmodel(newmis, "progs/biggren.mdl");
             newmis.lifenum = newmis.owner.lifenum;
+            newmis.tp_grenades_2 = GR_TYPE_TELE;
             //newmis.avelocity = '0 300 0';
+            
+            if (grentimers && notimers != 1) {
+                timer = spawn();
+                timer.nextthink = time + 0.8;
+                timer.think = GrenadeTimer;
+                timer.heat = 4;
+                timer.owner = self;
+                timer.classname = "gtimer";
+                if (!notimers) {
+                    stuffcmd(self, "play grentimer\n");
+                }
+            }
         }
         
         setsize(newmis, '0 0 0', '0 0 0');
         setorigin(newmis, self.origin);
         return;
-    }
-    if (gtype == GR_TYPE_CALTROP) {
-        ptime = ftos(0.5);
-        sprint(self, PRINT_HIGH, "Opening ", gs, "...\n");
-    } else {
-        ptime = ftos(3);
-        sprint(self, PRINT_HIGH, gs, " primed, ", ptime,
-                " seconds...\n");
     }
 
     self.tfstate = self.tfstate | 1;
@@ -853,7 +870,6 @@ void (float inp) TeamFortress_PrimeGrenade = {
 
         RemoveGrenadeTimers();
 
-        local float notimers = stof(infokey(self, "nt"));
         if (grentimers && notimers != 1) {
             timer = spawn();
             timer.nextthink = time + 0.8;

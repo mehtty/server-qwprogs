@@ -179,6 +179,7 @@ void () TeamFortress_MOTD = {
         TeamFortress_Alias("build", TF_ENGINEER_BUILD, 0);
         TeamFortress_Alias("detsentry", TF_ENGINEER_DETSENTRY, 0);
         TeamFortress_Alias("detdispenser", TF_ENGINEER_DETDISP, 0);
+        TeamFortress_Alias("usetele", TF_PLASMA_USETELE, 0);
     } else if (self.motd == 130) {
         stuffcmd(self, "is_aliased\n");
     } else if (self.motd == 400 && self.team_no == 0) {

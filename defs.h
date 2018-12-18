@@ -405,7 +405,7 @@
 #define TF_ENGINEER_DETSENTRY   79  // Engineer: Detonate sentry gun for Engineer
 #define TF_DISCARD_DROP_AMMO    80
 #define TF_DISGUISE_PLASMA      81  // Spy: Disguise as Plasma
-// unused                       82
+#define TF_PLASMA_USETELE	    82
 // unused                       83
 // unused                       84
 // unused                       85
@@ -685,7 +685,7 @@
 #define RE_SUPER_SHOTGUN	16 // 8 shots
 #define RE_GRENADE_LAUNCHER	6
 #define RE_ROCKET_LAUNCHER	4
-#define RE_PLASMALAUNCHER		6
+#define RE_PLASMALAUNCHER		4
 #define RE_SNIPER_RIFLE		1
 
 // reload times
