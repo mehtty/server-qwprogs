@@ -793,13 +793,19 @@ void (float inp) TeamFortress_PrimeGrenade = {
         newmis.movetype = 6;
         newmis.solid = 2;
         newmis.classname = "grenade";
-        makevectors(self.v_angle);
-        newmis.velocity = (v_forward * 600) + (v_up * 25);
-        newmis.velocity = newmis.velocity * 700;
-        newmis.angles = vectoangles(newmis.velocity);
+        
         newmis.weapon = self.team_no;
 
         if (gtype == GR_TYPE_FLARE) {
+            makevectors(self.v_angle);
+            if (self.v_angle_x) {
+                    newmis.velocity = v_forward * 1200 + v_up * 200;
+                } else {
+                    newmis.velocity = aim(self, 10000);
+                    newmis.velocity = newmis.velocity * 1200;
+                    newmis.velocity_z = 75;
+                }
+            newmis.angles = vectoangles(newmis.velocity);
             newmis.think = FlareGrenadeExplode;
             newmis.nextthink = time + 0.8;
             newmis.touch = FlareGrenadeTouch;
@@ -935,13 +941,6 @@ void () TeamFortress_GrenadePrimed = {
     } else if (self.weapon == GR_TYPE_NAPALM) {
         newmis.touch = NapalmGrenadeTouch;
         newmis.think = NapalmGrenadeExplode;
-        newmis.skin = 2;
-        newmis.avelocity = '0 300 0';
-        setmodel(newmis, "progs/biggren.mdl");
-    } else if (self.weapon == GR_TYPE_TELE) {
-        newmis.touch = TeleGrenadeTouch;
-        newmis.think = TeleGrenadeExplode;
-        newmis.lifenum = newmis.owner.lifenum;
         newmis.skin = 2;
         newmis.avelocity = '0 300 0';
         setmodel(newmis, "progs/biggren.mdl");
@@ -2900,13 +2899,6 @@ void () TeamFortress_ExplodePerson = {
     } else if (self.weapon == GR_TYPE_NAPALM) {
         newmis.touch = NapalmGrenadeTouch;
         newmis.think = NapalmGrenadeExplode;
-        newmis.skin = 2;
-        newmis.avelocity = '0 300 0';
-        setmodel(newmis, "progs/biggren.mdl");
-    } else if (self.weapon == GR_TYPE_TELE) {
-        newmis.touch = TeleGrenadeTouch;
-        newmis.think = TeleGrenadeExplode;
-        newmis.lifenum = newmis.owner.lifenum;
         newmis.skin = 2;
         newmis.avelocity = '0 300 0';
         setmodel(newmis, "progs/biggren.mdl");

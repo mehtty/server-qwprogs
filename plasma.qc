@@ -112,13 +112,12 @@ void () TeleGrenadeTouch = {
     if (other == world) {
         self.movetype = MOVETYPE_NONE;
         self.velocity = '0 0 0';
+        self.nextthink = time + 3;
     }
     if (self.velocity == '0 0 0') {
         self.avelocity = '0 0 0';
         self.touch = SUB_Null;
-    }
-
-    self.nextthink = time + 3;
+    }   
 };
 
 float (vector org) TestTeleLoc = {
