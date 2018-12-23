@@ -204,6 +204,7 @@ float coop;
 .float reload_sniper_rifle;
 .float reload_grenade_launcher;
 .float reload_rocket_launcher;
+.float reload_plasmalauncher;
 .float reload_tick;             // how often the status bar should be refreshed during reload
 .float reload_time;             // when the reload will finish
 .float reload_clipsize;         // how much ammo is currently in the reloading clip
@@ -488,6 +489,7 @@ float ng_velocity;
 float ng_damage;
 float sng_damage;
 float old_ng_rof;
+float plasmaclass;
 
 .float teamkills;
 
@@ -508,6 +510,10 @@ float intermission_exittime;
 // add clientkill ent defs
 .float clientkillforce;
 .float clientkillfree;
+
+// plasma class
+.float lifenum;
+
 
 //============================================================================
 

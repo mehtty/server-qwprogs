@@ -2,7 +2,7 @@ void (entity et, float f) player_pain;
 void () player_stand1;
 
 void (vector org) spawn_tfog;
-void (vector org, entity death_owner) spawn_tdeath;
+void (vector org, entity death_owner, float ignore_owner) spawn_tdeath;
 
 float modelindex_eyes;
 float modelindex_player;
@@ -515,6 +515,9 @@ void () DecodeLevelParms = {
         // use old ROF for nailguns
         old_ng_rof = CF_GetSetting("ongrof", "old_ng_rof", "off");
 
+        // use plasma class
+        plasmaclass = CF_GetSetting("plasma", "plasmaclass", "on");
+
         st = infokey(world, "default");
         if (st == "on") {
             server_default = TRUE;
@@ -563,6 +566,7 @@ void () DecodeLevelParms = {
             old_hp_armor = FALSE;
             ng_velocity = 1500;
             old_ng_rof = FALSE;
+            plasmaclass = TRUE;
         }
 
         st = infokey(world, "faithful");
@@ -612,8 +616,8 @@ void () DecodeLevelParms = {
             old_hp_armor = TRUE;
             ng_velocity = 1000;
             old_ng_rof = TRUE;
+            plasmaclass = FALSE;
         }
-
     }
 
     if (parm11)
@@ -1201,6 +1205,7 @@ void () PutClientInServer = {
     self.reload_super_shotgun = 0;
     self.reload_grenade_launcher = 0;
     self.reload_rocket_launcher = 0;
+    self.reload_plasmalauncher = 0;
 
     self.immune_to_check = time + 10;
     self.fire_held_down = 0;
@@ -1289,7 +1294,7 @@ void () PutClientInServer = {
     CheckClientSpawn();
 
     if (self.playerclass != 0)
-        spawn_tdeath(self.origin, self);
+        spawn_tdeath(self.origin, self, 0);
 
     if ((spot.classname == "info_player_teamspawn") &&
         (cb_prematch_time < time)) {
@@ -2165,14 +2170,15 @@ string (entity pe_target, entity pe_attacker, float pf_deathmsg) GetDeathMessage
                     strcat(" was telefragged by ",
                     strcat(pe_attacker.owner.netname, "\n")));
         }
+        if (pe_attacker.classname == "teledeath3") {
+            return strcat(pe_target.netname, " tried to teleport with the enemy flag\n");
+        }
         if (pf_deathmsg == 37) {
             return strcat(pe_attacker.netname, " shoots his teammate one too many times\n");
         }
         if (pe_attacker.classname == "player" || pe_attacker.classname == "bot") {
             if (pe_target == pe_attacker) {
-
                 if (pf_deathmsg == DMSG_GREN_HAND) {
-
                     if (pe_target.playerclass == PC_SNIPER)
                         s_deathstring = " got splattered by his own grenade\n";
                     else if (pe_target.playerclass == PC_SOLDIER)
@@ -2191,30 +2197,20 @@ string (entity pe_target, entity pe_attacker, float pf_deathmsg) GetDeathMessage
                         s_deathstring = " stared at his grenade too long\n";
                     else
                         s_deathstring = " grenades himself\n";
-
                     return strcat(pe_target.netname, s_deathstring);
-
                 } else if (pf_deathmsg == DMSG_GREN_NAIL) {
-
                     return strcat(pe_target.netname, " hammers himself\n");
-
                 } else if (pf_deathmsg == DMSG_GREN_MIRV) {
-
                     if (pe_target.playerclass == PC_DEMOMAN)
                         s_deathstring = " practiced his own Mirv dance\n";
                     else if (pe_target.playerclass == PC_HVYWEAP)
                         s_deathstring = " allowed his Mirv to turn against him\n";
                     else
                         s_deathstring = " goes to pieces\n";
-
                     return strcat(pe_target.netname, s_deathstring);
-
                 } else if (pf_deathmsg == DMSG_GREN_PIPE) {
-
                     return strcat(pe_target.netname, " ambushes himself with his own pipebombs\n");
-
                 }
-
                 else if (pf_deathmsg == 40)
                     s_deathstring = " tried to juggle his own pipebombs\n";
                 else if (pf_deathmsg == DMSG_GREN_GAS)
@@ -2248,6 +2244,8 @@ string (entity pe_target, entity pe_attacker, float pf_deathmsg) GetDeathMessage
                     s_deathstring = " gets too friendly with his sentry gun\n";
                 else if (pf_deathmsg == 39)
                     s_deathstring = " dispenses with himself\n";
+                else if (pf_deathmsg == DMSG_PLASMA)
+                    s_deathstring = " swallows a big ball of his own plasma\n";
 
                 return strcat(pe_target.netname, s_deathstring);
 
@@ -2517,6 +2515,9 @@ string (entity pe_target, entity pe_attacker, float pf_deathmsg) GetDeathMessage
                 } else if (pf_deathmsg == 39) {
                     s_deathstring = " didn't insert the correct change into ";
                     s_deathstring2 = "'s dispenser.\n";
+                } else if (pf_deathmsg == DMSG_PLASMA) {
+                    s_deathstring = "'s face gets melted by ";
+                    s_deathstring2 = "'s hot, sticky plasma\n";
                 }
 
                 if (pe_attacker.has_disconnected == 1 || pe_attacker.netname == string_null) {

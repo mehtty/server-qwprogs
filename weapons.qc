@@ -20,7 +20,7 @@ void () button_fire;
 
 void (entity pl, float fr) TF_AddFrags;
 
-void () DropGoalItems;
+void (entity player) DropGoalItems;
 
 void () TeamFortress_DisplayLegalClasses;
 
@@ -30,6 +30,7 @@ void () TeamFortress_ShowTF;
 void () TeamFortress_AssaultWeapon;
 void () TeamFortress_IncendiaryCannon;
 void () TeamFortress_FlameThrower;
+void () TeamFortress_PlasmaLauncher;
 void (float inp) TeamFortress_PrimeGrenade;
 void () TeamFortress_ThrowGrenade;
 void (float inp) TeamFortress_PrimeThrowGrenade;
@@ -100,6 +101,9 @@ void () W_FireFlame;
 void () W_FireIncendiaryCannon;
 void () W_FireTranq;
 void () W_FireLaser;
+void () W_FirePlasmaLauncher;
+void () W_Reload_PlasmaLauncher;
+
 
 void () HallucinationTimer;
 void () TranquiliserTimer;
@@ -141,6 +145,7 @@ void () W_Precache = {
     precache_sound("weapons/asscan4.wav");
     precache_sound("weapons/railgun.wav");
     precache_sound("weapons/dartgun.wav");
+    precache_model("progs/ball1.mdl");
 };
 
 float () crandom = {
@@ -1541,21 +1546,13 @@ void (entity pl) W_SetCurrentAmmo = {
         }
         pl.items = pl.items | IT_SHELLS;
         pl.weapon = IT_ROCKET_LAUNCHER;
-    } else if (pl.current_weapon == WEAP_FLAMETHROWER) {
+    } else if (pl.current_weapon == WEAP_PLASMALAUNCHER) {
         pl.currentammo = pl.ammo_cells;
-        if (!(pl.tfstate & TFSTATE_RELOADING)) {
-            pl.weaponmodel = "progs/v_flame.mdl";
-            pl.weaponframe = 0;
-        }
-        pl.items = pl.items | IT_CELLS;
-        pl.weapon = IT_GRENADE_LAUNCHER;
-    } else if (pl.current_weapon == WEAP_INCENDIARY) {
-        pl.currentammo = pl.ammo_rockets;
         if (!(pl.tfstate & TFSTATE_RELOADING)) {
             pl.weaponmodel = "progs/v_irock.mdl";
             pl.weaponframe = 0;
         }
-        pl.items = pl.items | IT_ROCKETS;
+        pl.items = pl.items | IT_CELLS;
         pl.weapon = IT_ROCKET_LAUNCHER;
     } else if (pl.current_weapon == WEAP_MEDIKIT) {
         if (!old_medikit) {
@@ -1613,6 +1610,8 @@ float () W_BestWeapon = {
         return WEAP_ASSAULT_CANNON;
     else if (self.ammo_cells >= 1 && it & WEAP_FLAMETHROWER)
         return WEAP_FLAMETHROWER;
+    else if (self.ammo_cells >= 5 && it & WEAP_PLASMALAUNCHER)
+        return WEAP_FLAMETHROWER;
     else if (self.ammo_nails >= 2 && it & WEAP_SUPER_NAILGUN)
         return WEAP_SUPER_NAILGUN;
     else if (self.ammo_shells >= 2 && it & WEAP_SUPER_SHOTGUN)
@@ -1664,8 +1663,6 @@ float () W_CheckNoAmmo = {
                 || self.current_weapon == WEAP_MEDIKIT)
         return 1;
     else if (self.current_weapon == WEAP_SUPER_NAILGUN && self.currentammo >= 4)
-        return 1;
-    else if (self.current_weapon == WEAP_INCENDIARY && self.currentammo >= 3)
         return 1;
     else if ((self.current_weapon == WEAP_SUPER_SHOTGUN || self.current_weapon == WEAP_NAILGUN)
                 && self.currentammo >= 2)
@@ -1740,27 +1737,32 @@ void () W_Reload_rocket_launcher = {
 
 float () CheckForReload = {
     if (self.current_weapon == WEAP_SHOTGUN) {
-        if (self.reload_shotgun >= 8 && self.ammo_shells > 0) {
+        if (self.reload_shotgun >= RE_SHOTGUN && self.ammo_shells > 0) {
             TeamFortress_ReloadCurrentWeapon();
             return 1;
         }
     } else if (self.current_weapon == WEAP_SUPER_SHOTGUN) {
-        if (self.reload_super_shotgun >= 16 && self.ammo_shells > 0) {
+        if (self.reload_super_shotgun >= RE_SUPER_SHOTGUN && self.ammo_shells > 0) {
             TeamFortress_ReloadCurrentWeapon();
             return 1;
         }
     } else if (self.current_weapon == WEAP_SNIPER_RIFLE) {
-        if (self.reload_sniper_rifle >= 1 && self.ammo_shells > 0 && sniperreload) {
+        if (self.reload_sniper_rifle >= RE_SNIPER_RIFLE && self.ammo_shells > 0 && sniperreload) {
             TeamFortress_ReloadCurrentWeapon();
             return 1;
         }
     } else if (self.current_weapon == WEAP_GRENADE_LAUNCHER) {
-        if ((self.reload_grenade_launcher >= 6) && (self.ammo_rockets > 0)) {
+        if ((self.reload_grenade_launcher >= RE_GRENADE_LAUNCHER) && (self.ammo_rockets > 0)) {
             TeamFortress_ReloadCurrentWeapon();
             return 1;
         }
     } else if (self.current_weapon == WEAP_ROCKET_LAUNCHER) {
-        if ((self.reload_rocket_launcher >= 4) && (self.ammo_rockets > 0)) {
+        if ((self.reload_rocket_launcher >= RE_ROCKET_LAUNCHER) && (self.ammo_rockets > 0)) {
+            TeamFortress_ReloadCurrentWeapon();
+            return 1;
+        }
+    } else if (self.current_weapon == WEAP_PLASMALAUNCHER) {
+        if ((self.reload_plasmalauncher >= RE_PLASMALAUNCHER) && (self.ammo_cells > 5)) {
             TeamFortress_ReloadCurrentWeapon();
             return 1;
         }
@@ -1784,7 +1786,11 @@ float (float weap) CheckForAmmo = {
     } else if (weap == WEAP_ROCKET_LAUNCHER) {
         if (self.reload_rocket_launcher >= 1 && self.ammo_rockets > self.reload_rocket_launcher)
             return 1;
+    } else if (weap == WEAP_PLASMALAUNCHER) {
+        if (self.reload_plasmalauncher >= 1 && self.ammo_cells >= self.reload_plasmalauncher * 5)
+            return 1;
     }
+    
     return 0;
 };
 
@@ -1921,22 +1927,15 @@ void () W_Attack = {
             TeamFortress_SetSpeed(self);
             player_assaultcannonup1();
         }
-    } else if (self.current_weapon == WEAP_FLAMETHROWER) {
-        player_shot1();
-        W_FireFlame();
-        if (self.waterlevel > 2)
-            Attack_Finished(1);
-        else
-            Attack_Finished(0.15);
-    } else if (self.current_weapon == WEAP_INCENDIARY) {
-        if (self.ammo_rockets >= 3) {
-            player_rocket1();
-            W_FireIncendiaryCannon();
-            Attack_Finished(1.2);
-        } else if (time >= self.antispam_incendiary_cannon) {
-            sprint(self, PRINT_HIGH, "Not enough ammo\n");
-            self.antispam_incendiary_cannon = time + 3;
-        }
+    } else if (self.current_weapon == WEAP_PLASMALAUNCHER) {
+        if (CheckForReload() == TRUE)
+            return;
+        player_rocket1();
+        W_FirePlasmaLauncher();
+        self.reload_plasmalauncher = self.reload_plasmalauncher + 1;
+        Status_Refresh(self);
+        CheckForReload();
+        Attack_Finished(0.5);
     } else if (self.current_weapon == WEAP_MEDIKIT) {
         sound(self, CHAN_WEAPON, "weapons/ax1.wav", 1, ATTN_NORM);
         r = random();
@@ -1992,11 +1991,11 @@ float (float weap) W_GetSlot = {
                 || weap == WEAP_FLAMETHROWER
                 || weap == WEAP_TRANQ
                 || weap == WEAP_LASER
-                || weap == WEAP_ASSAULT_CANNON) {
+                || weap == WEAP_ASSAULT_CANNON
+                || weap == WEAP_PLASMALAUNCHER) {
         return 1;
     } else if (weap == WEAP_SUPER_SHOTGUN
-                || weap == WEAP_AUTO_RIFLE
-                || weap == WEAP_INCENDIARY) {
+                || weap == WEAP_AUTO_RIFLE) {
         return 2;
     } else if (weap == WEAP_SHOTGUN) {
         if (self.playerclass == PC_SCOUT)
@@ -2036,7 +2035,9 @@ float (float inp) W_AmmoSlot = {
                 self.noammo = 1;
             else if (self.ammo_cells < 7)
                 self.noammo = 2;
-        } else if (self.playerclass == PC_PYRO && self.ammo_cells < 1)
+        } else if (self.playerclass == PC_PYRO && !plasmaclass && self.ammo_cells < 1)
+            self.noammo = 1;
+        else if (self.playerclass == PC_PLASMA && self.ammo_cells < 1)
             self.noammo = 1;
         else if (self.playerclass == PC_SPY && self.ammo_shells < 1)
             self.noammo = 1;
@@ -2051,12 +2052,13 @@ float (float inp) W_AmmoSlot = {
                     || self.playerclass == PC_MEDIC
                     || self.playerclass == PC_HVYWEAP
                     || self.playerclass == PC_SPY
-                    || self.playerclass == PC_ENGINEER)
+                    || self.playerclass == PC_ENGINEER
+                    || self.playerclass == PC_PLASMA)
                     && self.ammo_shells < 2)
             self.noammo = 1;
         else if (self.playerclass == PC_DEMOMAN && self.ammo_rockets < 1)
             self.noammo = 1;
-        else if (self.playerclass == PC_PYRO && self.ammo_rockets < 3)
+        else if (self.playerclass == PC_PYRO && !plasmaclass && self.ammo_rockets < 3)
             self.noammo = 1;
     } else if (inp == 3) {
         if (self.playerclass == PC_SCOUT
@@ -2070,7 +2072,8 @@ float (float inp) W_AmmoSlot = {
                     || self.playerclass == PC_DEMOMAN
                     || self.playerclass == PC_MEDIC
                     || self.playerclass == PC_HVYWEAP
-                    || self.playerclass == PC_PYRO)
+                    || self.playerclass == PC_PYRO
+                    || self.playerclass == PC_PLASMA)
                     && self.ammo_shells < 1)
             self.noammo = 1;
     } else if (inp == 4)
@@ -2095,8 +2098,8 @@ float () W_WeaponSlot1 = {
         return WEAP_SUPER_NAILGUN;
     else if (self.playerclass == PC_HVYWEAP)
         return WEAP_ASSAULT_CANNON;
-    else if (self.playerclass == PC_PYRO)
-        return WEAP_FLAMETHROWER;
+    else if (self.playerclass == PC_PLASMA)
+        return WEAP_PLASMALAUNCHER;
     else if (self.playerclass == PC_SPY)
         return WEAP_TRANQ;
     else if (self.playerclass == PC_ENGINEER)
@@ -2113,12 +2116,12 @@ float () W_WeaponSlot2 = {
                 || self.playerclass == PC_MEDIC
                 || self.playerclass == PC_HVYWEAP
                 || self.playerclass == PC_SPY
-                || self.playerclass == PC_ENGINEER)
+                || self.playerclass == PC_ENGINEER
+                || self.playerclass == PC_PLASMA)
         return WEAP_SUPER_SHOTGUN;
     else if (self.playerclass == PC_DEMOMAN) {
         return WEAP_GRENADE_LAUNCHER; // weaponmode = 1 (pipebomb launcher)
-    } else if (self.playerclass == PC_PYRO)
-        return WEAP_INCENDIARY;
+    }
     return 0;
 };
 
@@ -2136,7 +2139,7 @@ float () W_WeaponSlot3 = {
                 || self.playerclass == PC_DEMOMAN
                 || self.playerclass == PC_MEDIC
                 || self.playerclass == PC_HVYWEAP
-                || self.playerclass == PC_PYRO)
+                || self.playerclass == PC_PLASMA)
         return WEAP_SHOTGUN;
     return 0;
 };
@@ -2310,6 +2313,7 @@ void () CycleWeaponPrev = {
 
 void () PreMatchImpulses;
 void () DeadImpulses;
+void (entity player) UseTeleSkill;
 
 void () ImpulseCommands = {
     if ((self.last_impulse == TF_DETPACK) && self.impulse)
@@ -2323,6 +2327,13 @@ void () ImpulseCommands = {
     }
     if (self.impulse == TF_SPECIAL_SKILL)
         UseSpecialSkill();
+
+    switch (self.impulse) {
+        case TF_PLASMA_USETELE:
+            UseTeleSkill(self);
+        break;
+        default:
+    }
 
     if (self.impulse == TF_NEXTTIP) {
         self.display_tip = 0;
@@ -2398,7 +2409,7 @@ void () ImpulseCommands = {
     else if (self.impulse == TF_SHOW_IDS)
         TeamFortress_ShowIDs();
     else if ((self.playerclass != 0) && (self.impulse == TF_DROPFLAG))
-        DropGoalItems();
+        DropGoalItems(self);
     else if (self.impulse == TF_DISCARD)
         TeamFortress_Discard();
     else if (self.impulse == TF_DISCARD_DROP_AMMO)
@@ -2765,7 +2776,7 @@ void () W_WeaponFrame = {
 
     // class specials and grenade impulses always possible, also detpipe
     if (self.impulse == TF_SPECIAL_SKILL ||(self.impulse >= TF_GRENADE_1 && self.impulse <= TF_GRENADE_SWITCH)
-            || self.impulse == TF_PB_DETONATE) {
+            || self.impulse == TF_PB_DETONATE || self.impulse == TF_PLASMA_USETELE) {
         ImpulseCommands();
         return;
     }

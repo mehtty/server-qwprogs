@@ -314,7 +314,8 @@ void (float update) Menu_Class = {
     local string s_demoman  = Q"\s[4]\s Demoman ";
     local string s_medic    = Q"\s[5]\s Medic   ";
     local string s_hwguy    = Q"\s[6]\s HWGuy   ";
-    local string s_pyro     = Q"\s[7]\s Pyro    ";
+    local string s_pyro     = Q"\s[7]\s Pyro  ";
+    local string s_plasma   = Q"\s[7]\s Plasma  ";
     local string s_spy      = Q"\s[8]\s Spy     ";
     local string s_engineer = Q"\s[9]\s Engineer";
     local string s_randompc = Q"\s[0]\s RandomPC";
@@ -327,6 +328,7 @@ void (float update) Menu_Class = {
     s_medic = Menu_Class_ClassString(PC_MEDIC, s_medic);
     s_hwguy = Menu_Class_ClassString(PC_HVYWEAP, s_hwguy);
     s_pyro = Menu_Class_ClassString(PC_PYRO, s_pyro);
+    s_plasma = Menu_Class_ClassString(PC_PLASMA, s_plasma);
     s_spy = Menu_Class_ClassString(PC_SPY, s_spy);
     s_engineer = Menu_Class_ClassString(PC_ENGINEER, s_engineer);
     s_randompc = Menu_Class_ClassString(PC_RANDOM, s_randompc);
@@ -343,13 +345,20 @@ void (float update) Menu_Class = {
 
     // print out class menu
     self.menu_input = nil;
-    if (TeamFortress_TeamIsCivilian(self.team_no))
+    if (TeamFortress_TeamIsCivilian(self.team_no)) {
         Status_Print(self, "Your team can only be civilians\n");
+    }
+    else if (plasmaclass) {
+        Status_Menu(self, Menu_Class_Input, s_select, s_scout, s_sniper, s_soldier, s_demoman, s_medic, s_hwguy, s_plasma, s_spy, s_engineer, s_randompc);
+    }
     else
+    {
         Status_Menu(self, Menu_Class_Input, s_select, s_scout, s_sniper, s_soldier, s_demoman, s_medic, s_hwguy, s_pyro, s_spy, s_engineer, s_randompc);
+    }
+        
 
     strunzone(s_scout); strunzone(s_sniper); strunzone(s_soldier); strunzone(s_demoman); strunzone(s_medic);
-    strunzone(s_hwguy); strunzone(s_pyro); strunzone(s_spy); strunzone(s_engineer); strunzone(s_randompc);
+    strunzone(s_hwguy); strunzone(s_pyro); strunzone(s_plasma); strunzone(s_spy); strunzone(s_engineer); strunzone(s_randompc);
 };
 
 void (float inp) Menu_Drop_Input = {
@@ -554,11 +563,16 @@ void () Menu_Spy_Skin = {
     local string s_medic    = Q"\s[5]\s Medic      \n";
     local string s_hwguy    = Q"\s[6]\s HWGuy      \n";
     local string s_pyro     = Q"\s[7]\s Pyro       \n";
+    local string s_plasma   = Q"\s[7]\s Plasma     \n";
     local string s_spy      = Q"\s[8]\s Spy        \n";
     local string s_engineer = Q"\s[9]\s Engineer   \n";
-    local string s_nothing  = Q"\n\s[0]\s Nothing    \n";
+    local string s_nothing  = Q"\n\s[0]\s Nothing  \n";
 
-    Status_Menu(self, Menu_Spy_Skin_Input, s_disguise, s_scout, s_sniper, s_soldier, s_demoman, s_medic, s_hwguy, s_pyro, s_spy, s_engineer, s_nothing);
+    if (plasmaclass) {
+        Status_Menu(self, Menu_Spy_Skin_Input, s_disguise, s_scout, s_sniper, s_soldier, s_demoman, s_medic, s_hwguy, s_plasma, s_spy, s_engineer, s_nothing);
+    } else {
+        Status_Menu(self, Menu_Spy_Skin_Input, s_disguise, s_scout, s_sniper, s_soldier, s_demoman, s_medic, s_hwguy, s_pyro, s_spy, s_engineer, s_nothing);
+    }
 };
 
 void (float inp) Menu_Spy_Color_Input = {

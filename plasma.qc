@@ -1,0 +1,270 @@
+//==============================================
+// Weapons and functions for the PLASMA class and
+// associated weaponry
+//==============================================
+
+void () TeleGrenadeTouch;
+
+void () PlasmaLauncher_touch = {
+    if (self.voided)
+        return;
+    self.voided = 1;
+
+    if (other.solid == SOLID_TRIGGER)
+        return;
+
+    if (pointcontents(self.origin) == CONTENT_SKY) {
+        dremove(self);
+        return;
+    }
+    float damg;
+    damg = 100;
+    deathmsg = self.weapon;
+
+    if (other.health) {
+        TF_T_Damage(other, self, self.owner, damg, TF_TD_NOTTEAM,
+                    TF_TD_ELECTRICITY);
+    }
+
+    T_RadiusDamage(self, self.owner, damg, other);
+
+    WriteByte(MSG_MULTICAST, SVC_TEMPENTITY);
+    WriteByte(MSG_MULTICAST, TE_TAREXPLOSION);
+    WriteCoord(MSG_MULTICAST, self.origin_x);
+    WriteCoord(MSG_MULTICAST, self.origin_y);
+    WriteCoord(MSG_MULTICAST, self.origin_z);
+    multicast(self.origin, MULTICAST_PHS);
+
+    dremove(self);
+};
+
+void () W_FirePlasmaLauncher = {
+
+    if (self.ammo_cells < 5) {
+        W_ChangeToBestWeapon();
+        return;
+    }
+
+    self.ammo_cells = self.ammo_cells - 5;
+    self.currentammo = self.ammo_cells;
+    sound(self, CHAN_WEAPON, "weapons/sgun1.wav", 1, ATTN_NORM);
+
+    newmis = spawn();
+    newmis.owner = self;
+    newmis.movetype = MOVETYPE_BOUNCE;
+    newmis.solid = SOLID_BBOX;
+
+    makevectors(self.v_angle);
+    if (self.v_angle_x) {
+        newmis.velocity =
+            (((v_forward * 600) + (v_up * 200)) +
+             ((crandom() * v_right) * 10)) + ((crandom() * v_up) * 10);
+    } else {
+        newmis.velocity = aim(self, 10000);
+        newmis.velocity = newmis.velocity * 600;
+        newmis.velocity_z = 200;
+    }
+    newmis.angles = vectoangles(newmis.velocity);
+
+    newmis.touch = PlasmaLauncher_touch;
+    newmis.voided = 0;
+
+    newmis.nextthink = time + 2;
+    newmis.think = SUB_Remove;
+
+    newmis.weapon = DMSG_PLASMA;
+    newmis.classname = "plasmaball";
+    setmodel(newmis, "progs/ball1.mdl");
+    setsize(newmis, '0 0 0', '0 0 0');
+    setorigin(newmis, self.origin + v_forward * 8 + '0 0 16');
+
+    KickPlayer(-3, self);  
+};
+
+
+void () W_Reload_PlasmaLauncher = {
+    self.owner.tfstate = self.owner.tfstate - (self.owner.tfstate & TFSTATE_RELOADING);
+    self.owner.weaponmodel = "progs/v_irock.mdl";
+    sprint(self.owner, PRINT_LOW, "Finished reloading\n");
+    dremove(self);
+    W_WeaponState_Load(self.owner, 0);
+    Status_Refresh(self.owner);
+};
+
+void () TeamFortress_PlasmaLauncher = {
+    if (!(self.weapons_carried & WEAP_PLASMALAUNCHER)) {
+        return;
+    }
+    if (self.ammo_cells < 5) {
+        sprint(self, PRINT_HIGH, "Not enough ammo\n");
+        return;
+    }
+    self.current_weapon = WEAP_PLASMALAUNCHER;
+    W_SetCurrentAmmo(self);
+};
+
+void () TeleGrenadeTouch = {
+    sound(self, CHAN_WEAPON, "weapons/bounce.wav", 1, ATTN_NORM);
+    if (pointcontents(self.origin) == CONTENT_SKY) {
+        dremove(self);
+        return;
+    }
+    if (other == world) {
+        self.movetype = MOVETYPE_NONE;
+        self.velocity = '0 0 0';
+    }
+    if (self.velocity == '0 0 0') {
+        self.avelocity = '0 0 0';
+        self.touch = SUB_Null;
+    }   
+};
+
+float (vector org) TestTeleLoc = {
+    float t;
+    t = 0;
+    tracebox(org, self.owner.mins, self.owner.maxs, org, MOVE_NOMONSTERS, self.owner);
+
+    if (trace_startsolid != 1) {
+        t = trace_fraction;
+    }
+
+    return t;
+}
+
+void (entity player, vector dest) PerformTele = {
+    // put a tfog where the player was
+    spawn_tfog(player.origin);
+    // spawn a tfog flash at the destination
+    spawn_tfog(dest);
+
+    // test if player is carrying flag
+    entity flag;
+    flag = find(world, classname, "item_tfgoal");
+    while (flag != world) {
+        if (flag.owner == player) {
+            // drop flag on teleport entry
+            DropGoalItems(player);
+
+            // kill player on teleport exit
+            //spawn_tdeath(dest, player, 1);
+        }
+        flag = find(flag, classname, "item_tfgoal");
+    }
+
+    setorigin(player, dest);
+    spawn_tdeath(dest, player, 0);
+}
+
+vector (vector org, float positive, float units, string axis) TestTeleDir = {
+    float dist;
+    vector modorg;
+    dist = 0;
+    modorg = org;
+
+    if (positive != 1) {
+        // it's 0 for negative
+        positive = -1;
+    }
+    switch (axis) {
+        case "x":
+            modorg_x += units * positive;
+            break;
+        case "y":
+            modorg_y += units * positive;
+            break;
+        case "z":
+            modorg_z += units * positive;
+    }
+
+    traceline(org, modorg, MOVE_NOMONSTERS, self.owner);
+
+    // didn't go whole way, so work out how far to modify vector
+    if (trace_fraction != 1) {
+        dist = floor(units * trace_fraction);
+        dist = units - dist;
+        switch (axis) {
+        case "x":
+            org_x -= dist * positive;
+            break;
+        case "y":
+            org_y -= dist * positive;
+            break;
+        case "z":
+            org_z -= dist * positive;
+        }
+    }
+    return org;
+}
+
+
+void () TeleGrenadeExplode = {
+    if (self.lifenum == self.owner.lifenum) {
+        vector org, modorg;
+        float theight = 25;
+        float twide = 20;
+        float test;
+
+        org = self.origin;
+        modorg = org;
+        test = 0;
+        // put player feet at grenade level
+        modorg_z += theight;
+        test = TestTeleLoc(modorg);
+
+        if (test == 0) {
+            // test if on an angled floor
+            traceline(modorg, modorg - '0 0 50', MOVE_NOMONSTERS, self.owner);
+            if (trace_fraction != 1) {
+                vector ang = self.angles;
+                ang_x *= -1;
+                makevectors(ang);
+                vector coplanar = v_forward-(v_forward*trace_plane_normal)*trace_plane_normal;
+                // pitch, yaw, 0
+                vector angles = vectoangles(coplanar, trace_plane_normal);
+
+                if (angles_x > 0) {
+                    modorg_z += theight;
+                }
+            }
+
+            modorg = TestTeleDir(modorg, 1, theight, "z");
+            modorg = TestTeleDir(modorg, 0, theight, "z");
+            modorg = TestTeleDir(modorg, 1, twide, "y");
+            modorg = TestTeleDir(modorg, 0, twide, "y");
+            modorg = TestTeleDir(modorg, 1, twide, "x");
+            modorg = TestTeleDir(modorg, 0, twide, "x");
+
+            test = TestTeleLoc(modorg);
+        }
+        
+        if (test == 1) {
+            PerformTele(self.owner, modorg);
+        } /*else {
+            dprint("no good tele point found\n");
+            // could kill player here but would be unfun
+        }*/
+    }
+
+    WriteByte(MSG_MULTICAST, SVC_TEMPENTITY);
+    WriteByte(MSG_MULTICAST, TE_EXPLOSION);
+    WriteCoord(MSG_MULTICAST, self.origin_x);
+    WriteCoord(MSG_MULTICAST, self.origin_y);
+    WriteCoord(MSG_MULTICAST, self.origin_z);
+
+    multicast(self.origin, MULTICAST_PHS);
+    dremove(self);
+};
+
+void (entity player) UseTeleSkill = {
+    entity gren;
+    gren = find(world, classname, "grenade");
+    while (gren != world) {
+        if (gren.owner == player 
+            && gren.lifenum == player.lifenum 
+            && gren.tp_grenades_2 == GR_TYPE_TELE) {
+            gren.nextthink = time;
+            return;
+        }
+        gren = find(gren, classname, "grenade");
+    }
+}

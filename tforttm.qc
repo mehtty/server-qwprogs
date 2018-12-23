@@ -950,8 +950,11 @@ float (float pf_team_no, float pf_class) CF_GetClassRestriction = {
     } else if (pf_class == PC_HVYWEAP) {
         s_string = infokey(world, "cr_hwguy");
         f_max = stof(s_string);
-    } else if (pf_class == PC_PYRO) {
+    } else if (pf_class == PC_PYRO && !plasmaclass) {
         s_string = infokey(world, "cr_pyro");
+        f_max = stof(s_string);
+    } else if (pf_class == PC_PLASMA) {
+        s_string = infokey(world, "cr_plasma");
         f_max = stof(s_string);
     } else if (pf_class == PC_SPY) {
         if (spy_off)
