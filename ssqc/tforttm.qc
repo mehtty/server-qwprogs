@@ -10,6 +10,7 @@ float (float tno) TeamFortress_TeamGetMaxPlayers;
 string(float tno) TeamFortress_TeamGetColorString;
 float (float tno) TeamFortress_TeamGetIllegalClasses;
 string(float tn, float pc) TeamFortress_GetSkin;
+void (entity p, float inp) TeamFortress_ChangeClass_Options;
 
 float () TeamFortress_TeamPutPlayerInTeam =
 {
@@ -123,8 +124,10 @@ float (float tno) CF_TeamIsValid = {
         team = "red team";
     else if (tno == 3)
         team = "yellow team";
-    else
+    else if (tno == 4)
         team = "green team";
+    else
+        team = "observers";
 
     if (teamplay < 1) {
         sprint(self, PRINT_HIGH,
@@ -146,6 +149,8 @@ float (float tno) CF_TeamIsValid = {
     }
 
     tc = TeamFortress_TeamGetNoPlayers(tno);
+    dprint("MEHT team: ", ftos(tno), ", current: ", ftos(tc));
+    dprint(", MEHT max: ", ftos(TeamFortress_TeamGetMaxPlayers(tno)), "\n");
     if (tc >= TeamFortress_TeamGetMaxPlayers(tno)) {
         sprint(self, PRINT_HIGH, "That team is full, pick another\n");
         return 0;
@@ -158,11 +163,13 @@ float (entity pe, float tno, float skipclasscheck) TeamFortress_TeamSet_Options 
     local string st;
     local float tc;
     local string team;
+    dprint("MEHT set team options: ", pe.netname, " to ", ftos(tno), ", current: ", ftos(tc), "\n");
 
     if ((intermission_running != 0) || (intermission_exittime > time))
         return (0);
 
-    if (!CF_TeamIsValid) {
+    if (captainmode == 0 && tno > 0 && !CF_TeamIsValid(tno)) {
+        dprint("MEHT set team options: ", pe.netname, " to ", ftos(tno), "... team not valid\n");
         return 0;
     }
     
@@ -172,10 +179,12 @@ float (entity pe, float tno, float skipclasscheck) TeamFortress_TeamSet_Options 
         team = "red team";
     else if (tno == 3)
         team = "yellow team";
-    else
+    else if (tno == 4)
         team = "green team";
+    else
+        team = "observers";
 
-    if (tno > 0 && tno == pe.team_no) {
+    if (captainmode == 0 && tno > 0 && tno == pe.team_no) {
         sprint(pe, PRINT_HIGH, "You are already on the ", team, "!\n");
         return 0;
     }
@@ -206,7 +215,7 @@ float (entity pe, float tno, float skipclasscheck) TeamFortress_TeamSet_Options 
         SetTeamName(pe);
         if (pe.playerclass == 0) {
             if (TeamFortress_TeamIsCivilian(pe.team_no)) {
-                TeamFortress_ChangeClass(11);
+                TeamFortress_ChangeClass_Options(pe, 11);
             }
         }
         return (1);
@@ -216,13 +225,13 @@ float (entity pe, float tno, float skipclasscheck) TeamFortress_TeamSet_Options 
             pe.has_changedteam = 1;
             pe.clientkillforce = 1;
             pe.clientkillfree = 1;
-            ClientKill();
+            ClientKill_Specified(pe);
             pe.has_changedteam = 0;
         } else
         {
             pe.clientkillforce = 1;
             pe.clientkillfree = 0; 
-            ClientKill();  
+            ClientKill_Specified(pe);  
         }
     }
     // remove engineer buildings
@@ -232,7 +241,7 @@ float (entity pe, float tno, float skipclasscheck) TeamFortress_TeamSet_Options 
     if (pe.playerclass == PC_SPY && pe.undercover_team == tno)
         pe.last_team = pe.team_no;
     // remove existing gas grenades
-    RemoveGasTimers();
+    RemoveGasTimers(pe);
     bprint(PRINT_HIGH, pe.netname, " has joined the ");
     bprint(PRINT_HIGH, team, "\n");
     stuffcmd(pe, "color ");
@@ -244,19 +253,19 @@ float (entity pe, float tno, float skipclasscheck) TeamFortress_TeamSet_Options 
         if(pe.playerclass == PC_CIVILIAN) {
             if (TeamFortress_TeamIsCivilian(tno)) {
                 pe.team_no = tno;
-                TeamFortress_ChangeClass(11);
+                TeamFortress_ChangeClass_Options(pe, 11);
             } else {
-                TeamFortress_ChangeClass(0);
-                Menu_Class(0);
+                TeamFortress_ChangeClass_Options(pe, 0);
+                Menu_Class_Specific(0, pe);
             }
         } else {
             if (pe.playerclass == 0) {
             } else {
                 //Make sure the current class is still legal on the new team
                 override_mapclasses = CF_GetSetting("omc", "override_mapclasses", "off");
-                if (CF_GetClassRestriction(tno, self.playerclass) == -1 || CF_ClassIsRestricted(tno, self.playerclass)) {
-                    TeamFortress_ChangeClass(0);
-                    Menu_Class(0);
+                if (CF_GetClassRestriction(tno, pe.playerclass) == -1 || CF_ClassIsRestricted(tno, pe.playerclass)) {
+                    TeamFortress_ChangeClass_Options(pe, 0);
+                    Menu_Class_Specific(0, pe);
                 }
 
             }
@@ -275,13 +284,13 @@ float (entity pe, float tno, float skipclasscheck) TeamFortress_TeamSet_Options 
         if (pe.playerclass == 0) {
             if (TeamFortress_TeamIsCivilian(tno)) {
                 pe.team_no = tno;
-                TeamFortress_ChangeClass(11);
+                TeamFortress_ChangeClass_Options(pe, 11);
             }
         } else {
             // force to change class if class is forbidden on the new team
             if (!IsLegalClass(pe.playerclass) && !override_mapclasses) {
-                TeamFortress_ChangeClass(0);
-                Menu_Class(0);
+                TeamFortress_ChangeClass_Options(pe, 0);
+                Menu_Class_Specific(0, pe);
             }
         }
     }
@@ -302,6 +311,9 @@ void () TeamFortress_CheckTeamCheats = {
         return;
     if (self.deadflag)
         return;
+    if (captainmode) {
+        return;
+    }
 
     if (self.netname == string_null) {
         KickCheater(self);
@@ -517,6 +529,8 @@ float () TeamFortress_GetNoActivePlayers = {
 };
 
 float (float tno) TeamFortress_TeamGetMaxPlayers = {
+    dprint("MEHT team1max: ", ftos(team1maxplayers), ", team2max: ", ftos(team2maxplayers));
+    dprint(" MEHT team3max: ", ftos(team3maxplayers), ", team4max: ", ftos(team4maxplayers), "\n");
     if (tno == 1)
         return (team1maxplayers);
     if (tno == 2)

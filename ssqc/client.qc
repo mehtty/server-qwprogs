@@ -22,7 +22,7 @@ void () CeaseFire_think;
 
 void () RemoveGrenadeTimers;
 void () RemovePrimeTimers;
-void () RemoveGasTimers;
+void (entity pe) RemoveGasTimers;
 void () RemoveGrenades;
 
 void (entity eng) Engineer_RemoveBuildings;
@@ -64,6 +64,7 @@ string(float)TeamFortress_TeamGetColorString;
 void (float tno, float scoretoadd) TeamFortress_TeamIncreaseScore;
 float (entity pe, float tno, float skipclasscheck) TeamFortress_TeamSet_Options;
 float (float tno) TeamFortress_TeamGetLives;
+void (float update) Menu_Captain_PickPlayer;
 
 string nextmap;
 
@@ -1176,7 +1177,7 @@ void () RemovePlayerOwnedEnts = {
         te = find(te, classname, "pipebomb");
     }
     TeamFortress_RemoveTimers();
-    RemoveGasTimers();
+    RemoveGasTimers(self);
     Engineer_QuietlyRemoveBuildings(self);
     te = find(world, classname, "detpack");
     while (te) {
@@ -1368,7 +1369,7 @@ void () ClientKill = {
     TeamFortress_RemoveTimers();
 
     // players can't suicide again for 10 seconds
-    self.suicide_time = time + 5 + random() * 5;
+    if(!captainmode) self.suicide_time = time + 5 + random() * 5;
 
     if (self.clientkillfree == 1 && !self.has_throwngren && (self.has_changedteam || self.has_changedclass)) {
         TeamFortress_SetupRespawn(FALSE);
@@ -1388,7 +1389,7 @@ void () ClientKill = {
         } else
             logfrag(self, self);
 
-        TF_AddFrags(self, -1);
+        if(!captainmode) TF_AddFrags(self, -1);
         TeamFortress_SetupRespawn(TRUE);
         self.th_die();
     }
@@ -1407,6 +1408,13 @@ void () ClientKill = {
     if(votemode && vote_anarchy_mode) {
         CheckVoting();
     }
+};
+
+void (entity pe) ClientKill_Specified = {
+    local entity oldself = self;
+    self = pe;
+    ClientKill();
+    self = oldself;
 };
 
 entity lastspawn_team1;
@@ -2547,11 +2555,30 @@ void () PlayerPostThink = {
     } else {
         CheckPowerups();
         W_WeaponFrame();
-        if (self.motd <= 400) {
-            TeamFortress_MOTD();
+        if(captainmode && self.captain == captainmode) {
+//        if(captainmode && self.captain == captainmode) {
+//            dprint("MEHT captain client for: ",self.netname,", menu = ",ftos(self.current_menu),"\n");
+            if(infokeyf(self, INFOKEY_P_CSQCACTIVE)) {
+                //fte+csqc has its own team menu
+                //ask the client to activate it
+                captainmode = captainmode + 10;
+                bprint(PRINT_HIGH, "MEHT: Captainmode (2) is now ", ftos(captainmode), "\n");
+                Menu_Close(self);
+                UpdateClientMenu_Captain(self);
+                return;
+            } else if(self.playerclass) {
+                self.current_menu_page = 1;
+                captainmode = captainmode + 10;
+                bprint(PRINT_HIGH, "MEHT: Captainmode (3) is now ", ftos(captainmode), "\n");
+                Menu_Captain_PickPlayer(0);
+            }
         } else {
-            if (self.cheat_check == 0) {
-                self.cheat_check = time + 5;
+            if (self.motd <= 400) {
+                TeamFortress_MOTD();
+            } else {
+                if (self.cheat_check == 0) {
+                    self.cheat_check = time + 5;
+                }
             }
         }
         if (time >= self.StatusRefreshTime)

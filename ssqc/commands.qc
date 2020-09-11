@@ -132,22 +132,223 @@ void (entity pe) SetEquipmentForPlayer = {
     self = oldself;
 }
 
+#define CAPTAIN_CAPTAIN_1_PICK_MENU_UP 11
+#define CAPTAIN_CAPTAIN_2_PICK_MENU_UP 12
+#define CAPTAIN_CAPTAIN_1_PICK 1
+#define CAPTAIN_CAPTAIN_2_PICK 2
+
+void (float update) Menu_Captain_PickPlayer;
+
+void () InitCaptainMode = {
+    captainmode = CAPTAIN_CAPTAIN_1_PICK; //MEHT randomise
+    bprint(PRINT_HIGH, "\[\sCaptain Mode\s\]\s:\s All available players are now Observers\n");
+    local entity oldself = self;
+    local entity te = find (world, classname, "player");
+    while (te) {
+        te.captain = 0;
+        te.team_no = 0;
+        //te.lives = -1;
+        oldself = self;
+        self = te;
+        TeamFortress_ChangeClass_Options(te, 0);
+        TeamFortress_TeamSet_Options(te, 0, TRUE);
+        SetTeamName(te);
+        SetEquipmentForPlayer(te);
+        self = oldself;
+        //self = te;
+        //PlayerObserverMode();
+        //self = oldself;
+        te = find (te, classname, "player");
+    }
+};
+
+void () EndCaptainMode = {
+    captainmode = 0;
+    local entity oldself = self;
+    local entity te = find (world, classname, "player");
+    while (te) {
+        te.captain = 0;
+        te = find (te, classname, "player");
+    }
+};
+
+void () MakeTestCaptains = {
+    local entity oldself = self;
+    local entity te = find (world, classname, "player");
+    if (te) {
+        te.captain = 1;
+        //TeamFortress_ChangeClass_Options(te, 1);
+        te.team_no = 1;
+        TeamFortress_TeamSet_Options(te, 1, TRUE);
+        SetTeamName(te);
+        te.lives = -1;
+        self = te;
+        Menu_Class(0);
+        self = oldself;
+        bprint(PRINT_HIGH, "\[\sCaptain Mode\s\]\s:\s ", te.netname, " is now captain of team ", TeamToString(1), "\n");
+        te.current_menu_page = 1;
+        te = find (te, classname, "player");
+        if (te) {
+            te.captain = 2;
+            //TeamFortress_ChangeClass_Options(te, 2);
+            te.team_no = 2;
+            TeamFortress_TeamSet_Options(te, 2, TRUE);
+            SetTeamName(te);
+            te.lives = -1;
+            self = te;
+            Menu_Class(0);
+            self = oldself;
+            bprint(PRINT_HIGH, "\[\sCaptain Mode\s\]\s:\s ", te.netname, " is now captain of team ", TeamToString(2), "\n");
+            //entity oldself = self;
+            //self = te;
+            //captainmode = CAPTAIN_CAPTAIN_2_PICK;
+            //te.current_menu_page = 1;
+            //Menu_Captain_PickPlayer (FALSE);
+            //self = oldself;            
+        }
+    }
+};
+
+void (float inp) Menu_Captain_PickPlayer_Input = {
+    dprint("MEHT Starting input ",ftos(inp),"\n");
+    entity oldself;
+    if(inp < 0 || inp > 10) {
+        //Menu_Captain_PickPlayer(TRUE);
+        return;
+    }
+    switch (inp) {
+        case 8:
+            self.current_menu_page--;
+            if(self.current_menu_page < 1) {
+                self.current_menu_page = 1;
+            }
+            Menu_Captain_PickPlayer(FALSE);
+            return;
+        case 9:
+            self.current_menu_page++;
+            Menu_Captain_PickPlayer(FALSE);
+            return;
+        case 0:
+        case 10:
+            Menu_Close(self);
+            return;
+    }
+    local float count = 0, remainder = 0, page = 0, pickedsomeone = 0;
+    local entity te = find (world, classname, "player");
+    while (te) {
+        if(te.team_no > 0 || te.has_disconnected) {
+            te = find (te, classname, "player");
+            continue; //skip already picked players
+        }
+        page = floor(count / 7);
+        if(page == (self.current_menu_page - 1)) {
+            remainder = count % 7;
+            if((remainder + 1) == inp) {
+                pickedsomeone = TRUE;
+                te.team_no = 0;
+                TeamFortress_TeamSet_Options(te, self.team_no, TRUE);
+                SetTeamName(te);
+                oldself = self;
+                self = te;
+                Menu_Class(0);
+                self = oldself;
+                SetEquipmentForPlayer(te);
+                bprint(PRINT_HIGH, "\[\bCaptain Mode\b\]\b:\b ");
+                bprint(PRINT_HIGH, self.netname);
+                bprint(PRINT_HIGH, " \bcalled\b ");
+                bprint(PRINT_HIGH, te.netname);
+                bprint(PRINT_HIGH, " \bfor team\b ");
+                bprint(PRINT_HIGH, TeamToString(self.team_no));
+                bprint(PRINT_HIGH, "\b.\b\n");
+                captainmode = (captainmode==11?2:1);
+                bprint(PRINT_HIGH, "MEHT: Captainmode is now ", ftos(captainmode), "\n");
+                Menu_Close(self);
+                self.current_menu = 0;
+                return;
+            }
+        } else if(page >= self.current_menu_page) {
+            break;
+        }
+        count++;
+        te = find (te, classname, "player");
+    }
+    if(!pickedsomeone) {
+        Menu_Captain_PickPlayer(FALSE);
+    }
+};
+
+void (float update) Menu_Captain_PickPlayer = {
+    //self.current_menu = 399;
+    if(infokeyf(self, INFOKEY_P_CSQCACTIVE)) {
+        //fte+csqc has its own team menu
+        //ask the client to activate it
+        Menu_Close(self);
+        UpdateClientMenu_Captain(self);
+        return;
+    }
+
+    // allow toggling team menu using any method to show it
+    if (!update && self.menu_input == Menu_Captain_PickPlayer_Input) {
+        //Menu_Input(0);
+        return;
+    }
+
+    local string s_title = strcat("\sChoose a player for your team\s\nPage ",ftos(self.current_menu_page),"\n\n");
+    local string s_8   = Q"\s[8]\s Previous            \n";
+    local string s_9   = Q"\s[9]\s Next                \n";
+    local string s_0   = Q"\s[0]\s Exit                \n";
+    local string s_choices = "";
+    local float count = 0, remainder = 0, page = 0, playersleft = 0;
+    local entity te = find (world, classname, "player");
+    dprint("MEHT About to start loop: ",self.netname,"\n");
+    while (te) {
+        dprint("MEHT inside loop: ",te.netname, ", ", ftos(te.team_no), "\n");
+        if(te.team_no > 0 || te.has_disconnected) {
+            te = find (te, classname, "player");
+            continue; //skip already picked players
+        }
+        dprint("MEHT after continue\n");
+        playersleft = TRUE;
+        page = floor(count / 7);
+        if(page == (self.current_menu_page - 1)) {
+            remainder = count % 7;
+            s_choices = strcat(s_choices, "\s[\s", ftos(remainder + 1), "\s]\s ", strpadr(te.netname, 20), "\n");
+        } else if(page >= self.current_menu_page) {
+            break;
+        }
+        count++;
+        te = find (te, classname, "player");
+    }
+    if(!playersleft) {
+        bprint(PRINT_HIGH, "MEHT Call end captain mode here!\n");
+        bprint(PRINT_HIGH, "\[\sCaptain Mode\s\]\s:\s Teams have been chosen. Let's get it on!\n");
+        captainmode = 0;
+        EndCaptainMode();
+        return;
+    }
+    Status_Menu(self, Menu_Captain_PickPlayer_Input, s_title, s_choices, "\n", s_8, s_9, s_0);
+    //self.current_menu_type = ADMIN_MENU_TYPE_MAIN;
+
+    strunzone(s_choices); strunzone(s_title);
+};
+
 void (float cap1, float cap2) CaptainMode = {
     captainmode = 1;
     bprint(PRINT_HIGH, "\[\sCaptain Mode\s\]\s:\s All available players are now Observers\n");
     local string st = 0;
     local float userid = 0, csqcactive = 0;
-    local entity oldself;// = self;
+    //local entity oldself;// = self;
     local entity te = find (world, classname, "player");
     while (te != world) {
         userid = infokeyf(te, INFOKEY_P_USERID);
         csqcactive = infokeyf(te, INFOKEY_P_CSQCACTIVE);
         //te.immune_to_check = time + 10;
         if(userid == cap1 || userid == cap2) {
-            te.captain = 9;
-            te.playerclass = 0;
+            //te.playerclass = 0;
+            TeamFortress_ChangeClass_Options(te, 0);
             if(userid == cap1) {
                 //playerSetTeam(1);
+                te.captain = 1;
                 te.team_no = 1;
                 SetTeamName(te);
                 TeamFortress_TeamSet_Options(te, 1, TRUE);
@@ -159,6 +360,7 @@ void (float cap1, float cap2) CaptainMode = {
             }
             if(userid == cap2) {
                 //playerSetTeam(2);
+                te.captain = 2;
                 te.team_no = 2;
                 SetTeamName(te);
                 TeamFortress_TeamSet_Options(te, 2, TRUE);
@@ -181,20 +383,25 @@ void (float cap1, float cap2) CaptainMode = {
             } else {
                 //self = te;
                 Menu_Close(te);
-                te.current_menu_type = ADMIN_MENU_TYPE_CAPTAINSELECT;
-                te.current_menu_page = 1;
+                //te.current_menu_type = ADMIN_MENU_TYPE_CAPTAINSELECT;
+                //te.current_menu_page = 1;
+                //oldself = self;
+                //Menu_Captain_PickPlayer(0);
+                //self = oldself;
                 //Menu_Admin();
             }
         } else {
             te.captain = 0;
             //self = te;
             //playerSetTeam(-1);
-            te.team_no = 0;
-            te.playerclass = 0;
-            oldself = self;
-            self = te;
-            TeamFortress_ChangeClass(0);
-            self = oldself;
+            //te.team_no = 0;
+            //te.playerclass = 0;
+            //oldself = self;
+            //self = te;
+            //TeamFortress_ChangeClass(0);
+            //self = oldself;
+            TeamFortress_ChangeClass_Options(te, 0);
+            TeamFortress_TeamSet_Options(te, 0, TRUE);
             SetTeamName(te);
             //TeamFortress_TeamSet_Options(te, 0, TRUE);
             //stuffcmd(te, "color 0 0\n");
@@ -229,6 +436,12 @@ void (entity cap, float pick) CaptainPick = {
         sprint(self, PRINT_HIGH, "You are not a captain, sorry\n");
         return;
     }
+    
+    if(cap.captain + 10 != captainmode) {
+        sprint(self, PRINT_HIGH, "\bIt's not your turn to pick\b, sorry\n");
+        return;
+    }
+    
     local float countleft = 0, userid = 0;
     local entity picked = world, othercap = world, oldself;
     local entity te = find (world, classname, "player");
@@ -269,6 +482,7 @@ void (entity cap, float pick) CaptainPick = {
         self = picked;
         TeamFortress_TeamSet(cap.team_no);
         self = oldself;
+        captainmode = (captainmode==11?2:1);
     } else {
         sprint(self, PRINT_HIGH, "Sorry, couldn't pick ", picked.netname ,"\n");
     }
@@ -760,6 +974,10 @@ float (string arg1, string arg2, string arg3) ParseCmds = {
                 CaptainPick(self, farg2);
             }
             break;
+        case "captainmenu":
+            processedCmd = TRUE;
+            Menu_Captain_PickPlayer(TRUE);
+            break;
         case "mapmenu":
             processedCmd = TRUE;
             self.current_menu_page = 1;
@@ -1134,6 +1352,12 @@ float (string arg1, string arg2, string arg3) ParseCmds = {
                         UpdateAllAdmins();
                     }
                 }
+                break;
+            case "captainmode2":
+                processedCmd = TRUE;
+                InitCaptainMode();
+                MakeTestCaptains();
+                captainmode = CAPTAIN_CAPTAIN_1_PICK;
                 break;
             case "captainmode":
                 processedCmd = TRUE;

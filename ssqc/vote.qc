@@ -1558,7 +1558,7 @@ void (float update) Vote_Menu_Map_Action = {
 
 void (float inp) Vote_Menu_Map_Input = {
     if(inp < 0 || inp > 10) {
-        Vote_Menu_Map(1);
+        //Vote_Menu_Map(1);
         return;
     }
     switch (inp) {

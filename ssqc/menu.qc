@@ -118,6 +118,8 @@ void (entity pl) UpdateClientMenu_FixSentry;
 void (entity pl) UpdateClientMenu_FixDispenser;
 void (entity pl, entity disp) UpdateClientMenu_UseDispenser;
 void (entity pl) UpdateClientMenu_Admin;
+void (float update) Menu_Captain_PickPlayer;
+
 
 void (entity pl) Menu_Close =
 {
@@ -154,6 +156,12 @@ void (float inp) Menu_Team_Input = {
         return;
 
     if (inp == 0) {
+        return;
+    }
+
+    if(captainmode > 0) {
+        Menu_Close(self);
+        sprint(self, PRINT_HIGH, "\bCaptainmode active.\bPlease wait to be chosen\n");
         return;
     }
 
@@ -230,6 +238,11 @@ void (float update) Menu_Team = {
         /* Status_Menu(self, Menu_Team_Input, ""); */
         return;
 
+    if(captainmode > 0) {
+        Menu_Close(self);
+        sprint(self, PRINT_HIGH, "\bCaptainmode active.\bPlease wait to be chosen\n");
+        return;
+    }
     //If there's only one team, just join it
     if (number_of_teams == 1 && self.team_no == 0) {
         Menu_Close(self);
@@ -310,6 +323,10 @@ void (float inp) Menu_Class_Input = {
         Menu_Close(self);
 
     TeamFortress_ChangeClass(inp);
+    
+    if(captainmode && self.captain == captainmode) {
+        Menu_Captain_PickPlayer(FALSE);
+    }
 };
 
 void () Menu_Class_Update = {
@@ -445,6 +462,13 @@ void (float update) Menu_Class = {
     strunzone(s_scout); strunzone(s_sniper); strunzone(s_soldier); strunzone(s_demoman); strunzone(s_medic);
     strunzone(s_hwguy); strunzone(s_pyro); strunzone(s_spy); strunzone(s_engineer); strunzone(s_randompc);
 };
+
+void (float update, entity pe) Menu_Class_Specific = {
+    local entity oldself = self;
+    self = pe;
+    Menu_Class(update);
+    self = oldself;
+}
 
 void (float inp) Menu_Drop_Input = {
     if ((inp > 0) && (inp < 5)) {

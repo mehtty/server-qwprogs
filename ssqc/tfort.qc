@@ -113,12 +113,12 @@ void () RemovePrimeTimers = {
     }
 };
 
-void () RemoveGasTimers = {
+void (entity pe) RemoveGasTimers = {
     local entity te;
 
     te = find(world, classname, "gastimer");
     while (te != world) {
-        if (te.owner == self)
+        if (te.owner == pe)
             dremove(te);
         te = find(te, classname, "gastimer");
     }
@@ -308,6 +308,13 @@ void (float inp) TeamFortress_ChangeClass = {
     }
     self.spawn_time = time;
 };
+
+void (entity p, float inp) TeamFortress_ChangeClass_Options = {
+    local entity oldself = self;
+    self = p;
+    TeamFortress_ChangeClass(inp);
+    self = oldself;
+}
 
 void () TeamFortress_DisplayLegalClasses = {
     local float gotone;
